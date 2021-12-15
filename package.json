@@ -1,0 +1,21 @@
+{
+  "name": "@r-group-devs/shell-subgraph",
+  "version": "0.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "scripts": {
+    "codegen": "graph codegen",
+    "build": "graph build",
+    "prepare": "mustache config/${NETWORK:-rinkeby}.json subgraph.template.yaml > subgraph.yaml",
+    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ r-group-devs/shell-${NETWORK:-rinkeby}"
+  },
+  "dependencies": {
+    "@graphprotocol/graph-cli": "0.25.1",
+    "@graphprotocol/graph-ts": "0.24.1"
+  },
+  "devDependencies": {
+    "mustache": "4.2.0"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "🚀 deploy subgraph",
+      "type": "shell",
+      "command": "NETWORK=${input:network} yarn prepare && yarn codegen && NETWORK=${input:network} yarn deploy && rm subgraph.yaml",
+      "problemMatcher": []
+    },
+  ],
+  "inputs": [
+    {
+      "id": "network",
+      "description": "Network Name (eg rinkeby, ropsten, etc)",
+      "default": "rinkeby",
+      "type": "promptString"
+    },
+  ]
+}
