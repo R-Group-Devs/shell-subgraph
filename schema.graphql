@@ -1,0 +1,32 @@
+type Factory @entity {
+  id: ID!
+  address: String!
+  createdAtBlock: BigInt!
+  createdAtTimestamp: BigInt!
+  createdAtTransactionHash: String!
+  collections: [Collection!]! @derivedFrom(field: "factory")
+  collectionCount: Int!
+}
+
+type Collection @entity {
+  id: ID!
+  factory: Factory!
+  creator: Account!
+  createdAtBlock: BigInt!
+  createdAtTimestamp: BigInt!
+  createdAtTransactionHash: String!
+  name: String!
+  symbol: String!
+  address: String!
+}
+
+type Engine @entity {
+  id: ID!
+  address: String!
+}
+
+type Account @entity {
+  id: ID!
+  address: String!
+  createdCollections: [Collection!]! @derivedFrom(field: "creator")
+}
