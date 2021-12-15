@@ -1,0 +1,23 @@
+specVersion: 0.0.2
+schema:
+  file: ./schema.graphql
+dataSources:
+- kind: ethereum/contract
+  name: CollectionFactory
+  network: {{network}}
+  source:
+    address: "{{contractAddress}}"
+    abi: CollectionFactory
+    startBlock: {{startBlock}}
+  mapping:
+    kind: ethereum/events
+    apiVersion: 0.0.5
+    language: wasm/assemblyscript
+    file: ./src/factory.ts
+    entities: [ ]
+    abis:
+    - name: CollectionFactory
+      file: ./abis/CollectionFactory.json
+    eventHandlers:
+    - event: CollectionCreated(indexed address,string,string,address,address)
+      handler: handleCollectionCreated
