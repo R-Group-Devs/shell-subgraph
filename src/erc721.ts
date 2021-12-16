@@ -1,7 +1,8 @@
 import { Collection } from "../generated/schema";
 import { Transfer } from "../generated/templates/ERC721Datasource/ERC721";
+import { ICollection } from "../generated/templates/ERC721Datasource/ICollection";
 import { ZERO_ADDRESS } from "./constants";
-import { getOrCreateAccount, getOrCreateNft } from "./entities";
+import { getOrCreateAccount, getOrCreateEngine, getOrCreateNft } from "./entities";
 
 export function handleTransfer(event: Transfer): void {
   const timestamp = event.block.timestamp;
@@ -9,14 +10,14 @@ export function handleTransfer(event: Transfer): void {
   const nft = getOrCreateNft(event.address, event.params.tokenId, timestamp);
   nft.lastActivityAtTimestamp = timestamp;
 
-  const owner = getOrCreateAccount(event.params.to, event.block.timestamp);
-  owner.lastSeenAtTimestamp = event.block.timestamp;
+  const owner = getOrCreateAccount(event.params.to, timestamp);
+  owner.lastSeenAtTimestamp = timestamp;
   nft.owner = owner.id;
 
   const collectionId = event.address.toHexString();
   const collection = Collection.load(collectionId);
   if (!collection) throw new Error(`collection does not yet exist: ${collectionId}`);
-  collection.lastActivityAtTimestamp = event.block.timestamp;
+  collection.lastActivityAtTimestamp = timestamp;
 
   if (event.params.from.equals(ZERO_ADDRESS)) {
     const mintedBy = getOrCreateAccount(event.transaction.from, timestamp);
@@ -27,7 +28,13 @@ export function handleTransfer(event: Transfer): void {
     mintedBy.mintedNftsCount += 1;
     mintedBy.save();
 
+    const framework = ICollection.bind(event.address);
+    const engine = getOrCreateEngine(framework.installedEngine(), timestamp);
+    engine.mintedNftsCount += 1;
+    engine.save();
+
     collection.nftCount += 1;
+    nft.mintedByEngine = engine.id;
   }
 
   nft.save();

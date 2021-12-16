@@ -28,6 +28,7 @@ export const getOrCreateEngine = (address: Address, timestamp: BigInt): Engine =
   engine = new Engine(id);
   engine.address = id;
   engine.collectionCount = 0;
+  engine.mintedNftsCount = 0;
   engine.releasedAtTimestamp = timestamp;
   engine.lastInstalledAtTimestamp = timestamp;
   engine.lastUpdatedAtTimestamp = timestamp;

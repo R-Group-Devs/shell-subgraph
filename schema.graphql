@@ -29,12 +29,14 @@ type Engine @entity {
   id: ID!
   address: String!
   collectionCount: Int!
+  mintedNftsCount: Int!
 
   releasedAtTimestamp: BigInt!
   lastUpdatedAtTimestamp: BigInt!
   lastInstalledAtTimestamp: BigInt!
 
   collections: [Collection!]! @derivedFrom(field: "engine")
+  mintedNfts: [NFT!]! @derivedFrom(field: "mintedByEngine")
 }
 
 type NFT @entity {
@@ -48,6 +50,7 @@ type NFT @entity {
   owner: Account!
   mintedBy: Account!
   mintedTo: Account!
+  mintedByEngine: Engine!
 }
 
 type NFTTransfer @entity {
