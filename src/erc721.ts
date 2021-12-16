@@ -1,19 +1,37 @@
-import { NFT } from "../generated/schema";
+import { log } from "@graphprotocol/graph-ts";
+import { Collection, NFT } from "../generated/schema";
 import { Transfer } from "../generated/templates/ERC721Datasource/ERC721";
-import { getOrCreateAccount } from "./entities";
+import { ZERO_ADDRESS } from "./constants";
+import { getOrCreateAccount, getOrCreateNft } from "./entities";
 
 export function handleTransfer(event: Transfer): void {
-  // const nftId = `${event.address.toHexString()}-${event.params.tokenId}`;
-  // const nft = NFT.load(nftId);
+  const timestamp = event.block.timestamp;
 
-  // if (nft == null) {
-  //   return;
-  // }
+  const nft = getOrCreateNft(event.address, event.params.tokenId, timestamp);
+  nft.transferCount += 1;
+  nft.lastActivityAtTimestamp = timestamp;
 
-  // const owner = getOrCreateAccount(event.params.to, event.block.timestamp);
-  // owner.lastSeenAtTimestamp = event.block.timestamp;
-  // owner.save();
+  const owner = getOrCreateAccount(event.params.to, event.block.timestamp);
+  owner.lastSeenAtTimestamp = event.block.timestamp;
 
-  // nft.owner = getOrCreateAccount(event.params.to, event.block.timestamp).id;
-  // nft.save();
+  const collectionId = event.address.toHexString();
+  const collection = Collection.load(collectionId);
+  if (!collection) throw new Error(`collection does not yet exist: ${collectionId}`);
+  collection.lastActivityAtTimestamp = event.block.timestamp;
+
+  if (event.params.from.equals(ZERO_ADDRESS)) {
+    const mintedBy = getOrCreateAccount(event.transaction.from, timestamp);
+    const mintedTo = getOrCreateAccount(event.params.to, timestamp);
+    nft.mintedBy = mintedBy.id;
+    nft.mintedTo = mintedTo.id;
+    mintedBy.lastSeenAtTimestamp = timestamp;
+    mintedBy.mintedNftsCount += 1;
+    mintedBy.save();
+
+    collection.nftCount += 1;
+  }
+
+  nft.save();
+  owner.save();
+  collection.save();
 }

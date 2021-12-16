@@ -11,6 +11,7 @@ export const getOrCreateAccount = (address: Address, timestamp: BigInt): Account
   account = new Account(id);
   account.address = id;
   account.createdCollectionsCount = 0;
+  account.mintedNftsCount = 0;
   account.ownedNftsCount = 0;
   account.firstSeenAtTimestamp = timestamp;
   account.lastSeenAtTimestamp = timestamp;
@@ -34,20 +35,26 @@ export const getOrCreateEngine = (address: Address, timestamp: BigInt): Engine =
   return engine;
 }
 
-// export const getOrCreateNft = (collectionAddress: Address, tokenId: BigInt, timestamp: BigInt): NFT => {
-//   const collection = Collection.load(collectionAddress.toHexString());
-//   const nftId = `${collection.id}-${tokenId}`;
-//   let nft = NFT.load(nftId);
-//   if (nft != null) {
-//     return nft;
-//   }
+export const getOrCreateNft = (collectionAddress: Address, tokenId: BigInt, timestamp: BigInt): NFT => {
+  const collectionId = collectionAddress.toHexString();
+  const collection = Collection.load(collectionId);
+  if (!collection) throw new Error(`collection does not yet exist: ${collectionId}`);
 
-//   const contract = ERC721.bind(collectionAddress);
+  const nftId = `${collection.id}-${tokenId}`;
+  let nft = NFT.load(nftId);
+  if (nft != null) {
+    return nft;
+  }
 
-//   nft = new NFT(nftId);
-//   nft.tokenId = tokenId;
-//   nft.collection = collection.id;
-//   nft.owner = getOrCreateAccount(contract.ownerOf(tokenId), timestamp).id;
-//   nft.save();
-//   return nft;
-// }
+  const contract = ERC721.bind(collectionAddress);
+
+  nft = new NFT(nftId);
+  nft.tokenId = tokenId;
+  nft.transferCount = 0;
+  nft.collection = collection.id;
+  nft.owner = getOrCreateAccount(contract.ownerOf(tokenId), timestamp).id;
+  nft.createdAtTimestamp = timestamp;
+  nft.lastActivityAtTimestamp = timestamp;
+  nft.save();
+  return nft;
+}
