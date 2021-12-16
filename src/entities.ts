@@ -50,7 +50,6 @@ export const getOrCreateNft = (collectionAddress: Address, tokenId: BigInt, time
 
   nft = new NFT(nftId);
   nft.tokenId = tokenId;
-  nft.transferCount = 0;
   nft.collection = collection.id;
   nft.owner = getOrCreateAccount(contract.ownerOf(tokenId), timestamp).id;
   nft.createdAtTimestamp = timestamp;

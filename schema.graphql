@@ -40,7 +40,6 @@ type Engine @entity {
 type NFT @entity {
   id: ID!
   tokenId: BigInt!
-  transferCount: Int!
 
   createdAtTimestamp: BigInt!
   lastActivityAtTimestamp: BigInt!

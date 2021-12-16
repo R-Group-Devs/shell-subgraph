@@ -7,11 +7,11 @@ export function handleTransfer(event: Transfer): void {
   const timestamp = event.block.timestamp;
 
   const nft = getOrCreateNft(event.address, event.params.tokenId, timestamp);
-  nft.transferCount += 1;
   nft.lastActivityAtTimestamp = timestamp;
 
   const owner = getOrCreateAccount(event.params.to, event.block.timestamp);
   owner.lastSeenAtTimestamp = event.block.timestamp;
+  nft.owner = owner.id;
 
   const collectionId = event.address.toHexString();
   const collection = Collection.load(collectionId);
