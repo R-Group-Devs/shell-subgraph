@@ -1,39 +1,47 @@
 type Factory @entity {
   id: ID!
   address: String!
-  createdAtBlock: BigInt!
-  createdAtTimestamp: BigInt!
-  createdAtTransactionHash: String!
-  collections: [Collection!]! @derivedFrom(field: "factory")
   collectionCount: Int!
+
+  collections: [Collection!]! @derivedFrom(field: "factory")
+
+  createdAtTimestamp: BigInt!
 }
 
 type Collection @entity {
   id: ID!
-  factory: Factory!
-  engine: Engine!
-  creator: Account!
-  createdAtBlock: BigInt!
-  createdAtTimestamp: BigInt!
-  createdAtTransactionHash: String!
   name: String!
   symbol: String!
   address: String!
 
-  lastUpdatedTimestamp: BigInt!
+  createdAtTimestamp: BigInt!
+  lastUpdatedAtTimestamp: BigInt!
+  lastActivityAtTimestamp: BigInt!
+
+  factory: Factory!
+  engine: Engine!
+  creator: Account!
 }
 
 type Engine @entity {
   id: ID!
   address: String!
-  collections: [Collection!]! @derivedFrom(field: "engine")
   collectionCount: Int!
 
-  lastUpdatedTimestamp: BigInt!
+  releasedAtTimestamp: BigInt!
+  lastUpdatedAtTimestamp: BigInt!
+  lastInstalledAtTimestamp: BigInt!
+
+  collections: [Collection!]! @derivedFrom(field: "engine")
 }
 
 type Account @entity {
   id: ID!
   address: String!
+  createdCollectionsCount: Int!
+
+  firstSeenAtTimestamp: BigInt!
+  lastSeenAtTimestamp: BigInt!
+
   createdCollections: [Collection!]! @derivedFrom(field: "creator")
 }

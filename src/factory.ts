@@ -4,14 +4,14 @@ import { Collection, Factory } from '../generated/schema';
 import { getOrCreateAccount, getOrCreateEngine } from './entities';
 
 export function handleCollectionCreated(event: CollectionCreated): void {
-  const factoryId = dataSource.address().toHexString();
+  const factoryAddress = dataSource.address().toHexString();
+  const factoryId = factoryAddress;
 
   let factory = Factory.load(factoryId);
   if (factory == null) {
     factory = new Factory(factoryId);
-    factory.createdAtBlock = event.block.number;
+    factory.address = factoryAddress;
     factory.createdAtTimestamp = event.block.timestamp;
-    factory.createdAtTransactionHash = event.transaction.hash.toHexString();
     factory.collectionCount = 0;
   }
   factory.collectionCount += 1;
@@ -20,20 +20,24 @@ export function handleCollectionCreated(event: CollectionCreated): void {
   const address = event.params.collection.toHexString();
   const collection = new Collection(address);
 
-  const engine = getOrCreateEngine(event.params.engine);
+  const engine = getOrCreateEngine(event.params.engine, event.block.timestamp);
   engine.collectionCount += 1;
-  engine.lastUpdatedTimestamp = event.block.timestamp;
+  // intentionally not setting updated here
   engine.save();
 
-  collection.factory = factory.id;
-  collection.engine = engine.id;
+  const creator = getOrCreateAccount(event.transaction.from, event.block.timestamp);
+  creator.lastSeenAtTimestamp = event.block.timestamp;
+  creator.createdCollectionsCount += 1;
+  creator.save();
+
   collection.name = event.params.name;
   collection.symbol = event.params.symbol;
   collection.address = address;
-  collection.creator = getOrCreateAccount(event.transaction.from).id
-  collection.createdAtBlock = event.block.number;
   collection.createdAtTimestamp = event.block.timestamp;
-  collection.createdAtTransactionHash = event.transaction.hash.toHexString();
-  collection.lastUpdatedTimestamp = event.block.timestamp;
+  collection.lastUpdatedAtTimestamp = event.block.timestamp;
+  collection.lastActivityAtTimestamp = event.block.timestamp;
+  collection.factory = factory.id;
+  collection.engine = engine.id;
+  collection.creator = creator.id;
   collection.save();
 }
