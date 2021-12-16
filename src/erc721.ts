@@ -1,5 +1,4 @@
-import { log } from "@graphprotocol/graph-ts";
-import { Collection, NFT } from "../generated/schema";
+import { Collection } from "../generated/schema";
 import { Transfer } from "../generated/templates/ERC721Datasource/ERC721";
 import { ZERO_ADDRESS } from "./constants";
 import { getOrCreateAccount, getOrCreateNft } from "./entities";
