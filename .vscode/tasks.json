@@ -2,6 +2,12 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "label": "✨ compile subgraph",
+      "type": "shell",
+      "command": "NETWORK=${input:network} yarn prepare && yarn codegen",
+      "problemMatcher": []
+    },
+    {
       "label": "🚀 deploy subgraph",
       "type": "shell",
       "command": "NETWORK=${input:network} yarn prepare && yarn codegen && NETWORK=${input:network} yarn deploy && rm subgraph.yaml",
