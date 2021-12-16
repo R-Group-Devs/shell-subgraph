@@ -1,5 +1,6 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
-import { Account, Engine } from "../generated/schema";
+import { Account, Collection, Engine, NFT } from "../generated/schema";
+import { ERC721 } from "../generated/templates/ERC721Datasource/ERC721";
 
 export const getOrCreateAccount = (address: Address, timestamp: BigInt): Account => {
   const id = address.toHexString();
@@ -10,6 +11,7 @@ export const getOrCreateAccount = (address: Address, timestamp: BigInt): Account
   account = new Account(id);
   account.address = id;
   account.createdCollectionsCount = 0;
+  account.ownedNftsCount = 0;
   account.firstSeenAtTimestamp = timestamp;
   account.lastSeenAtTimestamp = timestamp;
   account.save();
@@ -31,3 +33,21 @@ export const getOrCreateEngine = (address: Address, timestamp: BigInt): Engine =
   engine.save();
   return engine;
 }
+
+// export const getOrCreateNft = (collectionAddress: Address, tokenId: BigInt, timestamp: BigInt): NFT => {
+//   const collection = Collection.load(collectionAddress.toHexString());
+//   const nftId = `${collection.id}-${tokenId}`;
+//   let nft = NFT.load(nftId);
+//   if (nft != null) {
+//     return nft;
+//   }
+
+//   const contract = ERC721.bind(collectionAddress);
+
+//   nft = new NFT(nftId);
+//   nft.tokenId = tokenId;
+//   nft.collection = collection.id;
+//   nft.owner = getOrCreateAccount(contract.ownerOf(tokenId), timestamp).id;
+//   nft.save();
+//   return nft;
+// }

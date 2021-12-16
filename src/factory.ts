@@ -33,6 +33,7 @@ export function handleCollectionCreated(event: CollectionCreated): void {
   collection.name = event.params.name;
   collection.symbol = event.params.symbol;
   collection.address = address;
+  collection.nftCount = 0;
   collection.createdAtTimestamp = event.block.timestamp;
   collection.lastUpdatedAtTimestamp = event.block.timestamp;
   collection.lastActivityAtTimestamp = event.block.timestamp;

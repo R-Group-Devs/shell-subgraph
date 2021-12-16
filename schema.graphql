@@ -13,6 +13,7 @@ type Collection @entity {
   name: String!
   symbol: String!
   address: String!
+  nftCount: Int!
 
   createdAtTimestamp: BigInt!
   lastUpdatedAtTimestamp: BigInt!
@@ -21,6 +22,7 @@ type Collection @entity {
   factory: Factory!
   engine: Engine!
   creator: Account!
+  nfts: [NFT!]! @derivedFrom(field: "collection")
 }
 
 type Engine @entity {
@@ -35,13 +37,37 @@ type Engine @entity {
   collections: [Collection!]! @derivedFrom(field: "engine")
 }
 
+type NFT @entity {
+  id: ID!
+  tokenId: BigInt!
+
+  createdAtTimestamp: BigInt!
+  lastActivityAtTimestamp: BigInt!
+
+  collection: Collection!
+  owner: Account!
+}
+
+type NFTTransfer @entity {
+  id: ID!
+  to: String!
+  from: String!
+
+  transactionHash: String!
+  createdAtTimestamp: BigInt!
+
+  nft: NFT!
+}
+
 type Account @entity {
   id: ID!
   address: String!
   createdCollectionsCount: Int!
+  ownedNftsCount: Int!
 
   firstSeenAtTimestamp: BigInt!
   lastSeenAtTimestamp: BigInt!
 
   createdCollections: [Collection!]! @derivedFrom(field: "creator")
+  ownedNfts: [NFT!]! @derivedFrom(field: "owner")
 }
