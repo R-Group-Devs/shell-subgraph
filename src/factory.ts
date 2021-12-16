@@ -1,7 +1,7 @@
 import { dataSource } from '@graphprotocol/graph-ts';
 import { CollectionCreated } from '../generated/CollectionFactory/CollectionFactory'
 import { Collection, Factory } from '../generated/schema';
-import { getOrCreateAccount } from './entities';
+import { getOrCreateAccount, getOrCreateEngine } from './entities';
 
 export function handleCollectionCreated(event: CollectionCreated): void {
   const factoryId = dataSource.address().toHexString();
@@ -21,6 +21,7 @@ export function handleCollectionCreated(event: CollectionCreated): void {
   const collection = new Collection(address);
 
   collection.factory = factory.id;
+  collection.engine = getOrCreateEngine(event.params.engine).id;
   collection.name = event.params.name;
   collection.symbol = event.params.symbol;
   collection.address = address;

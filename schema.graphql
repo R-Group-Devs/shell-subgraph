@@ -11,6 +11,7 @@ type Factory @entity {
 type Collection @entity {
   id: ID!
   factory: Factory!
+  engine: Engine!
   creator: Account!
   createdAtBlock: BigInt!
   createdAtTimestamp: BigInt!
