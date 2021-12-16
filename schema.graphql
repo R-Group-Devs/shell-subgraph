@@ -19,11 +19,17 @@ type Collection @entity {
   name: String!
   symbol: String!
   address: String!
+
+  lastUpdatedTimestamp: BigInt!
 }
 
 type Engine @entity {
   id: ID!
   address: String!
+  collections: [Collection!]! @derivedFrom(field: "engine")
+  collectionCount: Int!
+
+  lastUpdatedTimestamp: BigInt!
 }
 
 type Account @entity {

@@ -21,6 +21,7 @@ export const getOrCreateEngine = (address: Address): Engine => {
   }
   engine = new Engine(id);
   engine.address = id;
+  engine.collectionCount = 0;
   engine.save();
   return engine;
 }

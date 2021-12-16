@@ -20,16 +20,20 @@ export function handleCollectionCreated(event: CollectionCreated): void {
   const address = event.params.collection.toHexString();
   const collection = new Collection(address);
 
+  const engine = getOrCreateEngine(event.params.engine);
+  engine.collectionCount += 1;
+  engine.lastUpdatedTimestamp = event.block.timestamp;
+  engine.save();
+
   collection.factory = factory.id;
-  collection.engine = getOrCreateEngine(event.params.engine).id;
+  collection.engine = engine.id;
   collection.name = event.params.name;
   collection.symbol = event.params.symbol;
   collection.address = address;
-
   collection.creator = getOrCreateAccount(event.transaction.from).id
   collection.createdAtBlock = event.block.number;
   collection.createdAtTimestamp = event.block.timestamp;
   collection.createdAtTransactionHash = event.transaction.hash.toHexString();
-
+  collection.lastUpdatedTimestamp = event.block.timestamp;
   collection.save();
 }
