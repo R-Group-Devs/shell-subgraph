@@ -28,6 +28,7 @@ type Collection @entity {
 type Engine @entity {
   id: ID!
   address: String!
+  name: String!
   collectionCount: Int!
   mintedNftsCount: Int!
 
