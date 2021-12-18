@@ -1,4 +1,4 @@
-import { Collection } from "../generated/schema";
+import { Collection, NFTTransfer } from "../generated/schema";
 import { Transfer } from "../generated/templates/ERC721Datasource/ERC721";
 import { ICollection } from "../generated/templates/ERC721Datasource/ICollection";
 import { ZERO_ADDRESS } from "./constants";
@@ -37,7 +37,16 @@ export function handleTransfer(event: Transfer): void {
     nft.mintedByEngine = engine.id;
   }
 
+  const transferId = event.transaction.hash.toHex() + "-" + event.logIndex.toString();
+  const transfer = new NFTTransfer(transferId);
+  transfer.to = event.params.to.toHexString();
+  transfer.from = event.params.from.toHexString();
+  transfer.transactionHash = event.transaction.hash.toHexString();
+  transfer.createdAtTimestamp = event.block.timestamp;
+  transfer.nft = nft.id;
+
   nft.save();
   owner.save();
   collection.save();
+  transfer.save();
 }
