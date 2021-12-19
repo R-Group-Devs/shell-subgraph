@@ -1,7 +1,7 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
 import { Account, Collection, Engine, NFT } from "../generated/schema";
-import { ERC721 } from "../generated/templates/ERC721Datasource/ERC721";
-import  {IEngine} from '../generated/templates/ERC721Datasource/IEngine';
+import { Collection as CollectionContract } from "../generated/templates/CollectionDatasource/Collection";
+import { IEngine } from '../generated/templates/CollectionDatasource/IEngine';
 
 export const getOrCreateAccount = (address: Address, timestamp: BigInt): Account => {
   const id = address.toHexString();
@@ -52,7 +52,7 @@ export const getOrCreateNft = (collectionAddress: Address, tokenId: BigInt, time
     return nft;
   }
 
-  const contract = ERC721.bind(collectionAddress);
+  const contract = CollectionContract.bind(collectionAddress);
 
   nft = new NFT(nftId);
   nft.tokenId = tokenId;

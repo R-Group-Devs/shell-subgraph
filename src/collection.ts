@@ -1,8 +1,17 @@
 import { Collection, NFTTransfer } from "../generated/schema";
+import { OwnershipTransferred } from "../generated/templates/CollectionDatasource/Collection";
 import { Transfer } from "../generated/templates/ERC721Datasource/ERC721";
 import { ICollection } from "../generated/templates/ERC721Datasource/ICollection";
 import { ZERO_ADDRESS } from "./constants";
 import { getOrCreateAccount, getOrCreateEngine, getOrCreateNft } from "./entities";
+
+export function handleOwnershipTransferred(event: OwnershipTransferred): void {
+  const collectionId = event.address.toHexString();
+  const collection = Collection.load(collectionId);
+  if (!collection) throw new Error(`collection does not yet exist: ${collectionId}`);
+  collection.owner = getOrCreateAccount(event.params.newOwner, event.block.timestamp).id;
+  collection.save();
+}
 
 export function handleTransfer(event: Transfer): void {
   const timestamp = event.block.timestamp;

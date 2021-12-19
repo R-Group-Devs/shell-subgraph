@@ -22,6 +22,7 @@ type Collection @entity {
   factory: Factory!
   engine: Engine!
   creator: Account!
+  owner: Account!
   nfts: [NFT!]! @derivedFrom(field: "collection")
 }
 

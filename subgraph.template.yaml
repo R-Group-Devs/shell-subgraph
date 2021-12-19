@@ -24,24 +24,26 @@ dataSources:
     - event: CollectionCreated(indexed address,string,string,address,address)
       handler: handleCollectionCreated
 templates:
-- name: ERC721Datasource
+- name: CollectionDatasource
   kind: ethereum/contract
   network: {{network}}
   source:
-    abi: ERC721
+    abi: Collection
   mapping:
     kind: ethereum/events
     apiVersion: 0.0.5
     language: wasm/assemblyscript
-    file: ./src/erc721.ts
+    file: ./src/collection.ts
     entities: [ ]
     abis:
-    - name: ERC721
-      file: ./abis/ERC721.json
     - name: ICollection
       file: ./abis/ICollection.json
+    - name: Collection
+      file: ./abis/Collection.json
     - name: IEngine
       file: ./abis/IEngine.json
     eventHandlers:
     - event: Transfer(indexed address,indexed address,indexed uint256)
       handler: handleTransfer
+    - event: OwnershipTransferred(indexed address,indexed address)
+      handler: handleOwnershipTransferred

@@ -1,6 +1,6 @@
 import { dataSource } from '@graphprotocol/graph-ts';
 import { CollectionCreated } from '../generated/CollectionFactory/CollectionFactory'
-import { ERC721Datasource } from "../generated/templates";
+import { CollectionDatasource } from "../generated/templates";
 import { Collection, Factory } from '../generated/schema';
 import { getOrCreateAccount, getOrCreateEngine } from './entities';
 
@@ -51,5 +51,5 @@ export function handleCollectionCreated(event: CollectionCreated): void {
   collection.save();
 
   // spawn new datasource
-  ERC721Datasource.create(collectionAddress);
+  CollectionDatasource.create(collectionAddress);
 }
