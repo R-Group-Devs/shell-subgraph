@@ -1,4 +1,4 @@
-import { Collection, NFTTransfer } from "../generated/schema";
+import { Collection, Factory, NFTTransfer } from "../generated/schema";
 import { OwnershipTransferred } from "../generated/templates/CollectionDatasource/Collection";
 import { Transfer } from "../generated/templates/ERC721Datasource/ERC721";
 import { ICollection } from "../generated/templates/ERC721Datasource/ICollection";
@@ -41,6 +41,11 @@ export function handleTransfer(event: Transfer): void {
     const engine = getOrCreateEngine(framework.installedEngine(), timestamp);
     engine.mintedNftsCount += 1;
     engine.save();
+
+    const factory = Factory.load(collection.factory);
+    if (!factory) throw new Error('factory not found');
+    factory.nftCount += 1;
+    factory.save();
 
     collection.nftCount += 1;
     nft.mintedByEngine = engine.id;

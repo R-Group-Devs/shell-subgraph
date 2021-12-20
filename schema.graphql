@@ -2,6 +2,7 @@ type Factory @entity {
   id: ID!
   address: String!
   collectionCount: Int!
+  nftCount: Int!
 
   collections: [Collection!]! @derivedFrom(field: "factory")
 

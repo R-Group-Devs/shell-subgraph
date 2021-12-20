@@ -16,6 +16,7 @@ export function handleCollectionCreated(event: CollectionCreated): void {
     factory.address = factoryAddress;
     factory.createdAtTimestamp = event.block.timestamp;
     factory.collectionCount = 0;
+    factory.nftCount = 0;
   }
   factory.collectionCount += 1;
   factory.save();
