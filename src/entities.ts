@@ -1,7 +1,7 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
-import { Account, Collection, Engine, NFT } from "../generated/schema";
-import { Collection as CollectionContract } from "../generated/templates/CollectionDatasource/Collection";
-import { IEngine } from '../generated/templates/CollectionDatasource/IEngine';
+import { Account, Collection, Engine, NFT, NFTBalance } from "../generated/schema";
+import { IEngine } from '../generated/ShellFactoryDatasource/IEngine';
+import { IShellERC721 } from '../generated/templates/IShellERC721Datasource/IShellERC721';
 
 export const getOrCreateAccount = (address: Address, timestamp: BigInt): Account => {
   const id = address.toHexString();
@@ -31,7 +31,7 @@ export const getOrCreateEngine = (address: Address, timestamp: BigInt): Engine =
 
   engine = new Engine(id);
   engine.address = id;
-  engine.name = contract.name();
+  engine.name = contract.getEngineName();
   engine.collectionCount = 0;
   engine.mintedNftsCount = 0;
   engine.releasedAtTimestamp = timestamp;
@@ -52,7 +52,7 @@ export const getOrCreateNft = (collectionAddress: Address, tokenId: BigInt, time
     return nft;
   }
 
-  const contract = CollectionContract.bind(collectionAddress);
+  const contract = IShellERC721.bind(collectionAddress);
 
   nft = new NFT(nftId);
   nft.tokenId = tokenId;
@@ -62,4 +62,21 @@ export const getOrCreateNft = (collectionAddress: Address, tokenId: BigInt, time
   nft.lastActivityAtTimestamp = timestamp;
   nft.save();
   return nft;
+}
+
+export const getOrCreateNFTBalance = (nft: NFT, address: Address, timestamp: BigInt): NFTBalance => {
+  const owner = getOrCreateAccount(address, timestamp);
+  const balanceId = `${nft.id}-${owner.id}`;
+  let balance = NFTBalance.load(balanceId);
+  if (balance != null) {
+    return balance;
+  }
+  balance = new NFTBalance(balanceId);
+  balance.nft = nft.id;
+  balance.balance = BigInt.fromI32(0);
+  balance.owner = owner.id;
+  balance.lastUpdatedAtTimestamp = timestamp;
+  balance.save();
+
+  return balance;
 }

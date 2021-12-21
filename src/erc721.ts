@@ -1,17 +1,8 @@
-import { Collection, Factory, NFTTransfer } from "../generated/schema";
-import { OwnershipTransferred } from "../generated/templates/CollectionDatasource/Collection";
-import { Transfer } from "../generated/templates/ERC721Datasource/ERC721";
-import { ICollection } from "../generated/templates/ERC721Datasource/ICollection";
+import { BigInt, store } from "@graphprotocol/graph-ts";
+import { Collection, Factory } from "../generated/schema";
+import { IShellERC721, Transfer } from "../generated/templates/IShellERC721Datasource/IShellERC721";
 import { ZERO_ADDRESS } from "./constants";
-import { getOrCreateAccount, getOrCreateEngine, getOrCreateNft } from "./entities";
-
-export function handleOwnershipTransferred(event: OwnershipTransferred): void {
-  const collectionId = event.address.toHexString();
-  const collection = Collection.load(collectionId);
-  if (!collection) throw new Error(`collection does not yet exist: ${collectionId}`);
-  collection.owner = getOrCreateAccount(event.params.newOwner, event.block.timestamp).id;
-  collection.save();
-}
+import { getOrCreateAccount, getOrCreateEngine, getOrCreateNft, getOrCreateNFTBalance } from "./entities";
 
 export function handleTransfer(event: Transfer): void {
   const timestamp = event.block.timestamp;
@@ -28,6 +19,7 @@ export function handleTransfer(event: Transfer): void {
   if (!collection) throw new Error(`collection does not yet exist: ${collectionId}`);
   collection.lastActivityAtTimestamp = timestamp;
 
+  // if minting
   if (event.params.from.equals(ZERO_ADDRESS)) {
     const mintedBy = getOrCreateAccount(event.transaction.from, timestamp);
     const mintedTo = getOrCreateAccount(event.params.to, timestamp);
@@ -37,7 +29,7 @@ export function handleTransfer(event: Transfer): void {
     mintedBy.mintedNftsCount += 1;
     mintedBy.save();
 
-    const framework = ICollection.bind(event.address);
+    const framework = IShellERC721.bind(event.address);
     const engine = getOrCreateEngine(framework.installedEngine(), timestamp);
     engine.mintedNftsCount += 1;
     engine.save();
@@ -49,18 +41,19 @@ export function handleTransfer(event: Transfer): void {
 
     collection.nftCount += 1;
     nft.mintedByEngine = engine.id;
+  } else { // else if transfer from real address
+    const balanceId = `${nft.id}-${event.params.from.toHexString()}`;
+    store.remove('NFTBalance', balanceId);
   }
 
-  const transferId = event.transaction.hash.toHex() + "-" + event.logIndex.toString();
-  const transfer = new NFTTransfer(transferId);
-  transfer.to = event.params.to.toHexString();
-  transfer.from = event.params.from.toHexString();
-  transfer.transactionHash = event.transaction.hash.toHexString();
-  transfer.createdAtTimestamp = event.block.timestamp;
-  transfer.nft = nft.id;
+  // if not a burn
+  if (event.params.to.notEqual(ZERO_ADDRESS)) {
+    const balance = getOrCreateNFTBalance(nft, event.params.to, timestamp);
+    balance.balance = BigInt.fromI32(1);
+    balance.save();
+  }
 
   nft.save();
   owner.save();
   collection.save();
-  transfer.save();
 }

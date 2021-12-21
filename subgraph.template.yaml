@@ -2,12 +2,12 @@ specVersion: 0.0.2
 schema:
   file: ./schema.graphql
 dataSources:
-- name: CollectionFactory
+- name: ShellFactoryDatasource
   kind: ethereum/contract
   network: {{network}}
   source:
     address: "{{contractAddress}}"
-    abi: CollectionFactory
+    abi: ShellFactory
     startBlock: {{startBlock}}
   mapping:
     kind: ethereum/events
@@ -16,34 +16,47 @@ dataSources:
     file: ./src/factory.ts
     entities: [ ]
     abis:
-    - name: CollectionFactory
-      file: ./abis/CollectionFactory.json
+    - name: ShellFactory
+      file: ./abis/ShellFactory.json
+    - name: IShellFramework
+      file: ./abis/IShellFramework.json
     - name: IEngine
       file: ./abis/IEngine.json
     eventHandlers:
-    - event: CollectionCreated(indexed address,string,string,address,address)
+    - event: CollectionCreated(address,string,string,address,address)
       handler: handleCollectionCreated
 templates:
-- name: CollectionDatasource
+- name: IShellFrameworkDatasource
   kind: ethereum/contract
   network: {{network}}
   source:
-    abi: Collection
+    abi: IShellFramework
   mapping:
     kind: ethereum/events
     apiVersion: 0.0.5
     language: wasm/assemblyscript
-    file: ./src/collection.ts
+    file: ./src/framework.ts
     entities: [ ]
     abis:
-    - name: ICollection
-      file: ./abis/ICollection.json
-    - name: Collection
-      file: ./abis/Collection.json
-    - name: IEngine
-      file: ./abis/IEngine.json
+    - name: IShellFramework
+      file: ./abis/IShellFramework.json
+    eventHandlers:
+    - event: OwnershipTransferred(indexed address,indexed address)
+      handler: handleOwnershipTransferred
+- name: IShellERC721Datasource
+  kind: ethereum/contract
+  network: {{network}}
+  source:
+    abi: IShellERC721
+  mapping:
+    kind: ethereum/events
+    apiVersion: 0.0.5
+    language: wasm/assemblyscript
+    file: ./src/erc721.ts
+    entities: [ ]
+    abis:
+    - name: IShellERC721
+      file: ./abis/IShellERC721.json
     eventHandlers:
     - event: Transfer(indexed address,indexed address,indexed uint256)
       handler: handleTransfer
-    - event: OwnershipTransferred(indexed address,indexed address)
-      handler: handleOwnershipTransferred

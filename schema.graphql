@@ -4,9 +4,9 @@ type Factory @entity {
   collectionCount: Int!
   nftCount: Int!
 
-  collections: [Collection!]! @derivedFrom(field: "factory")
-
   createdAtTimestamp: BigInt!
+
+  collections: [Collection!]! @derivedFrom(field: "factory")
 }
 
 type Collection @entity {
@@ -16,14 +16,15 @@ type Collection @entity {
   address: String!
   nftCount: Int!
 
-  createdAtTimestamp: BigInt!
-  lastUpdatedAtTimestamp: BigInt!
-  lastActivityAtTimestamp: BigInt!
-
   factory: Factory!
   engine: Engine!
   creator: Account!
   owner: Account!
+
+  createdAtTimestamp: BigInt!
+  lastUpdatedAtTimestamp: BigInt!
+  lastActivityAtTimestamp: BigInt!
+
   nfts: [NFT!]! @derivedFrom(field: "collection")
 }
 
@@ -46,25 +47,26 @@ type NFT @entity {
   id: ID!
   tokenId: BigInt!
 
-  createdAtTimestamp: BigInt!
-  lastActivityAtTimestamp: BigInt!
-
   collection: Collection!
   owner: Account!
   mintedBy: Account!
   mintedTo: Account!
   mintedByEngine: Engine!
+
+  createdAtTimestamp: BigInt!
+  lastActivityAtTimestamp: BigInt!
+
+  balances: [NFTBalance!]! @derivedFrom(field: "nft")
 }
 
-type NFTTransfer @entity {
+type NFTBalance @entity {
   id: ID!
-  to: String!
-  from: String!
-
-  transactionHash: String!
-  createdAtTimestamp: BigInt!
+  balance: BigInt!
 
   nft: NFT!
+  owner: Account!
+
+  lastUpdatedAtTimestamp: BigInt!
 }
 
 type Account @entity {
