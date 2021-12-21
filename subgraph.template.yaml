@@ -23,7 +23,7 @@ dataSources:
     - name: IEngine
       file: ./abis/IEngine.json
     eventHandlers:
-    - event: CollectionCreated(address,string,string,address,address)
+    - event: CollectionCreated(address)
       handler: handleCollectionCreated
 templates:
 - name: IShellFrameworkDatasource
