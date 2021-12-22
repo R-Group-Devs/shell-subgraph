@@ -1,9 +1,20 @@
 import { dataSource } from '@graphprotocol/graph-ts';
-import { CollectionCreated } from '../generated/ShellFactoryDatasource/ShellFactory'
-import { Collection, Factory } from '../generated/schema';
+import { CollectionCreated, ImplementationRegistered } from '../generated/ShellFactoryDatasource/IShellFactory'
+import { Collection, Factory, Implementation } from '../generated/schema';
 import { getOrCreateAccount, getOrCreateEngine } from './entities';
 import { IShellFramework } from '../generated/ShellFactoryDatasource/IShellFramework';
 import { IShellERC721Datasource, IShellFrameworkDatasource } from '../generated/templates';
+
+export function handleImplementationRegistered(event: ImplementationRegistered): void {
+  const implementationId = event.params.implementation.toHexString();
+
+  const implementation = new Implementation(implementationId);
+  implementation.name = event.params.name;
+  implementation.address = implementationId;
+  implementation.collectionCount = 0;
+  implementation.createdAtTimestamp = event.block.timestamp;
+  implementation.save();
+}
 
 export function handleCollectionCreated(event: CollectionCreated): void {
   const timestamp  = event.block.timestamp;
@@ -22,8 +33,6 @@ export function handleCollectionCreated(event: CollectionCreated): void {
   }
   factory.collectionCount += 1;
   factory.save();
-
-
 
   // create the new collection entity
 
@@ -44,6 +53,7 @@ export function handleCollectionCreated(event: CollectionCreated): void {
    creator.createdCollectionsCount += 1;
    creator.save();
 
+  collection.implementation = event.params.implementation
   collection.name = contract.name();
   collection.symbol = contract.symbol();
   collection.address = collectionId;

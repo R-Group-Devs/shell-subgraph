@@ -7,7 +7,7 @@ dataSources:
   network: {{network}}
   source:
     address: "{{contractAddress}}"
-    abi: ShellFactory
+    abi: IShellFactory
     startBlock: {{startBlock}}
   mapping:
     kind: ethereum/events
@@ -16,15 +16,17 @@ dataSources:
     file: ./src/factory.ts
     entities: [ ]
     abis:
-    - name: ShellFactory
-      file: ./abis/ShellFactory.json
+    - name: IShellFactory
+      file: ./abis/IShellFactory.json
     - name: IShellFramework
       file: ./abis/IShellFramework.json
     - name: IEngine
       file: ./abis/IEngine.json
     eventHandlers:
-    - event: CollectionCreated(address)
+    - event: CollectionCreated(address,address)
       handler: handleCollectionCreated
+    - event: ImplementationRegistered(string,address)
+      handler: handleImplementationRegistered
 templates:
 - name: IShellFrameworkDatasource
   kind: ethereum/contract

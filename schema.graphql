@@ -9,6 +9,17 @@ type Factory @entity {
   collections: [Collection!]! @derivedFrom(field: "factory")
 }
 
+type Implementation @entity {
+  id: ID!
+  name: String!
+  address: String!
+  collectionCount: Int!
+
+  createdAtTimestamp: BigInt!
+
+  collections: [Collection!]! @derivedFrom(field: "implementation")
+}
+
 type Collection @entity {
   id: ID!
   name: String!
@@ -16,6 +27,7 @@ type Collection @entity {
   address: String!
   nftCount: Int!
 
+  implementation: Implementation!
   factory: Factory!
   engine: Engine!
   creator: Account!
