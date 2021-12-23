@@ -1,17 +1,22 @@
 import { dataSource } from '@graphprotocol/graph-ts';
 import { CollectionCreated, ImplementationRegistered } from '../generated/ShellFactoryDatasource/IShellFactory'
 import { Collection, Factory, Implementation } from '../generated/schema';
-import { getOrCreateAccount, getOrCreateEngine } from './entities';
+import { getOrCreateAccount, getOrCreateEngine, getOrCreateFactory } from './entities';
 import { IShellFramework } from '../generated/ShellFactoryDatasource/IShellFramework';
 import { IShellERC721Datasource, IShellFrameworkDatasource } from '../generated/templates';
 
 export function handleImplementationRegistered(event: ImplementationRegistered): void {
   const implementationId = event.params.implementation.toHexString();
 
+  const factory = getOrCreateFactory(dataSource.address(), event.block.timestamp);
+  factory.implementationCount += 1;
+  factory.save();
+
   const implementation = new Implementation(implementationId);
   implementation.name = event.params.name;
   implementation.address = implementationId;
   implementation.collectionCount = 0;
+  implementation.nftCount = 0;
   implementation.createdAtTimestamp = event.block.timestamp;
   implementation.save();
 }
@@ -21,16 +26,7 @@ export function handleCollectionCreated(event: CollectionCreated): void {
 
   // create the factory entity if it doesnt yet exists
 
-  const factoryAddress = dataSource.address().toHexString();
-  const factoryId = factoryAddress;
-  let factory = Factory.load(factoryId);
-  if (factory == null) {
-    factory = new Factory(factoryId);
-    factory.address = factoryAddress;
-    factory.createdAtTimestamp = timestamp;
-    factory.collectionCount = 0;
-    factory.nftCount = 0;
-  }
+  const factory = getOrCreateFactory(dataSource.address(), timestamp);
   factory.collectionCount += 1;
   factory.save();
 

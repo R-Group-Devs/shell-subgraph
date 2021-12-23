@@ -1,5 +1,5 @@
 import { BigInt, store } from "@graphprotocol/graph-ts";
-import { Collection, Factory } from "../generated/schema";
+import { Collection, Factory, Implementation } from "../generated/schema";
 import { IShellERC721, Transfer } from "../generated/templates/IShellERC721Datasource/IShellERC721";
 import { ZERO_ADDRESS } from "./constants";
 import { getOrCreateAccount, getOrCreateEngine, getOrCreateNft, getOrCreateNFTBalance } from "./entities";
@@ -38,6 +38,11 @@ export function handleTransfer(event: Transfer): void {
     if (!factory) throw new Error('factory not found');
     factory.nftCount += 1;
     factory.save();
+
+    const implementation = Implementation.load(collection.implementation);
+    if (!implementation) throw new Error('implementation not found');
+    implementation.nftCount += 1;
+    implementation.save();
 
     collection.nftCount += 1;
     nft.mintedByEngine = engine.id;

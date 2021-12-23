@@ -1,7 +1,26 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
-import { Account, Collection, Engine, NFT, NFTBalance } from "../generated/schema";
+import { Account, Collection, Engine, Factory, NFT, NFTBalance } from "../generated/schema";
 import { IEngine } from '../generated/ShellFactoryDatasource/IEngine';
 import { IShellERC721 } from '../generated/templates/IShellERC721Datasource/IShellERC721';
+
+export const getOrCreateFactory = (address: Address, timestamp: BigInt): Factory => {
+  const factoryAddress = address.toHexString();
+  const factoryId = factoryAddress;
+  let factory = Factory.load(factoryId);
+  if (factory != null) {
+    return factory;
+  }
+
+  factory = new Factory(factoryId);
+  factory.address = factoryAddress;
+  factory.createdAtTimestamp = timestamp;
+  factory.collectionCount = 0;
+  factory.implementationCount = 0;
+  factory.nftCount = 0;
+  factory.save();
+
+  return factory;
+}
 
 export const getOrCreateAccount = (address: Address, timestamp: BigInt): Account => {
   const id = address.toHexString();
