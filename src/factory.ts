@@ -55,6 +55,7 @@ export function handleCollectionCreated(event: CollectionCreated): void {
 
   const implementationId = event.params.implementation.toHexString();
   const implementation = Implementation.load(implementationId);
+  if (!implementation) throw new Error(`implementation not indexed: ${implementationId}`);
   implementation.collectionCount += 1;
   implementation.save();
 
