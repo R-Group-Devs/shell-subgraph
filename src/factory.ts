@@ -17,7 +17,7 @@ export function handleImplementationRegistered(event: ImplementationRegistered):
 }
 
 export function handleCollectionCreated(event: CollectionCreated): void {
-  const timestamp  = event.block.timestamp;
+  const timestamp = event.block.timestamp;
 
   // create the factory entity if it doesnt yet exists
 
@@ -41,19 +41,24 @@ export function handleCollectionCreated(event: CollectionCreated): void {
   const collection = new Collection(collectionId);
   const contract = IShellFramework.bind(collectionAddress);
 
-   // update engine and account
+  // update engine and account
 
-   const engine = getOrCreateEngine(contract.installedEngine(), timestamp);
-   engine.collectionCount += 1;
-   engine.lastInstalledAtTimestamp = timestamp;
-   engine.save();
+  const engine = getOrCreateEngine(contract.installedEngine(), timestamp);
+  engine.collectionCount += 1;
+  engine.lastInstalledAtTimestamp = timestamp;
+  engine.save();
 
-   const creator = getOrCreateAccount(event.transaction.from, timestamp);
-   creator.lastSeenAtTimestamp = timestamp;
-   creator.createdCollectionsCount += 1;
-   creator.save();
+  const creator = getOrCreateAccount(event.transaction.from, timestamp);
+  creator.lastSeenAtTimestamp = timestamp;
+  creator.createdCollectionsCount += 1;
+  creator.save();
 
-  collection.implementation = event.params.implementation
+  const implementationId = event.params.implementation.toHexString();
+  const implementation = Implementation.load(implementationId);
+  implementation.collectionCount += 1;
+  implementation.save();
+
+  collection.implementation = implementationId;
   collection.name = contract.name();
   collection.symbol = contract.symbol();
   collection.address = collectionId;
