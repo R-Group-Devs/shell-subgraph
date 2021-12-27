@@ -7,6 +7,9 @@ import { IERC1155 } from '../generated/ShellFactoryDatasource/IERC1155';
 import { getOrCreateAccount, getOrCreateEngine, getOrCreateFactory } from './entities';
 import { IShellERC721Datasource, IShellERC1155Datasource, IShellFrameworkDatasource } from '../generated/templates';
 
+const ERC721_INTERFACE_ID = Bytes.fromByteArray(Bytes.fromHexString('0x80ac58cd'));
+const ERC1155_INTERFACE_ID = Bytes.fromByteArray(Bytes.fromHexString('0xd9b67a26'));
+
 export function handleImplementationRegistered(event: ImplementationRegistered): void {
   const implementationId = event.params.implementation.toHexString();
 
@@ -62,11 +65,18 @@ export function handleCollectionCreated(event: CollectionCreated): void {
   // spawn new datasources
   IShellFrameworkDatasource.create(collectionAddress);
 
-  if (IERC721.bind(collectionAddress).try_supportsInterface(Bytes.fromByteArray(Bytes.fromHexString('0x80ac58cd')))) {
-    IShellERC721Datasource.create(collectionAddress);
-  } else if (IERC1155.bind(collectionAddress).try_supportsInterface(Bytes.fromByteArray(Bytes.fromHexString('0xd9b67a26')))) {
-    IShellERC1155Datasource.create(collectionAddress);
-  } else {
-    throw new Error('invalid collection')
+  {
+    const resp = IERC721.bind(collectionAddress).try_supportsInterface(ERC721_INTERFACE_ID);
+    if (!resp.reverted && resp.value === true) {
+      IShellERC721Datasource.create(collectionAddress);
+    }
   }
+
+  {
+    const resp = IERC1155.bind(collectionAddress).try_supportsInterface(ERC1155_INTERFACE_ID);
+    if (!resp.reverted && resp.value === true) {
+      IShellERC1155Datasource.create(collectionAddress);
+    }
+  }
+
 }

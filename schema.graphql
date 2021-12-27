@@ -47,6 +47,7 @@ type Engine @entity {
   createdAtTimestamp: BigInt!
 
   collections: [Collection!]! @derivedFrom(field: "engine")
+  nftEvents: [NFTEvent!]! @derivedFrom(field: "engine")
 }
 
 type NFT @entity {
@@ -59,7 +60,7 @@ type NFT @entity {
   createdAtTimestamp: BigInt!
 
   owners: [NFTOwner!]! @derivedFrom(field: "nft")
-  mints: [NFTMint!]! @derivedFrom(field: "nft")
+  events: [NFTEvent!]! @derivedFrom(field: "nft")
 }
 
 type NFTOwner @entity {
@@ -71,14 +72,25 @@ type NFTOwner @entity {
   createdAtTimestamp: BigInt!
 }
 
-type NFTMint @entity {
+enum NFTEventType {
+  TRANSFER
+  MINT
+  BURN
+  # ENGINE_INSTALL
+  # STORAGE_WRITE
+  # PUBLISH
+}
+
+type NFTEvent @entity {
   id: ID!
   nft: NFT!
+  eventType: NFTEventType!
+  operator: Account!
+  engine: Engine!
 
-  mintedBy: Account!
-  mintedTo: Account!
-  mintedByEngine: Engine!
-  amount: BigInt!
+  to: Account
+  from: Account
+  amount: BigInt
 
   createdAtTimestamp: BigInt!
 }
@@ -90,6 +102,7 @@ type Account @entity {
   createdCollections: [Collection!]! @derivedFrom(field: "creator")
   ownedCollections: [Collection!]! @derivedFrom(field: "owner")
   ownedNfts: [NFTOwner!]! @derivedFrom(field: "owner")
-  mintedNfts: [NFTMint!]! @derivedFrom(field: "mintedBy")
-  receivedNfts: [NFTMint!]! @derivedFrom(field: "mintedTo")
+  nftEventsAsOperator: [NFTEvent!]! @derivedFrom(field: "operator")
+  nftEventsAsTo: [NFTEvent!]! @derivedFrom(field: "operator")
+  nftEventsAsFrom: [NFTEvent!]! @derivedFrom(field: "operator")
 }

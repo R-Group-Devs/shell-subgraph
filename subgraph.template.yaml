@@ -63,6 +63,8 @@ templates:
     file: ./src/erc721.ts
     entities: [ ]
     abis:
+    - name: IShellFramework
+      file: ./abis/IShellFramework.json
     - name: IShellERC721
       file: ./abis/IShellERC721.json
     - name: IERC721
@@ -82,6 +84,8 @@ templates:
     file: ./src/erc1155.ts
     entities: [ ]
     abis:
+    - name: IShellFramework
+      file: ./abis/IShellFramework.json
     - name: IShellERC1155
       file: ./abis/IShellERC1155.json
     - name: IERC1155

@@ -1,5 +1,5 @@
-import { Address, BigInt } from "@graphprotocol/graph-ts";
-import { Account, Collection, Engine, Factory, NFT, NFTOwner } from "../generated/schema";
+import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
+import { Account, Collection, Engine, Factory, NFT, NFTEvent, NFTOwner } from "../generated/schema";
 import { IEngine } from '../generated/ShellFactoryDatasource/IEngine';
 
 export const getOrCreateFactory = (address: Address, timestamp: BigInt): Factory => {
@@ -87,4 +87,20 @@ export const getOrCreateNFTOwner = (nft: NFT, ownerAddress: Address, timestamp: 
 
   nftOwner.save();
   return nftOwner;
+}
+
+
+export const createNftEvent = (nft: NFT, type: string, engine: Engine, event: ethereum.Event): NFTEvent => {
+  const timestamp = event.block.timestamp;
+
+  const eventId = `${event.transaction.hash.toHexString()}-${event.logIndex}`;
+  const nftEvent = new NFTEvent(eventId);
+  nftEvent.nft = nft.id;
+  nftEvent.eventType = type;
+  nftEvent.operator = getOrCreateAccount(event.transaction.from, timestamp).id;
+  nftEvent.engine = engine.id;
+  nftEvent.createdAtTimestamp = timestamp;
+
+  nftEvent.save();
+  return nftEvent;
 }
