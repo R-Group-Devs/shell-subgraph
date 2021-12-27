@@ -1,9 +1,8 @@
 type Factory @entity {
   id: ID!
   address: String!
-  collectionCount: Int!
-  nftCount: Int!
-  implementationCount: Int!
+
+  owner: Account!
 
   createdAtTimestamp: BigInt!
 
@@ -15,8 +14,6 @@ type Implementation @entity {
   id: ID!
   name: String!
   address: String!
-  collectionCount: Int!
-  nftCount: Int!
 
   factory: Factory!
 
@@ -30,7 +27,6 @@ type Collection @entity {
   name: String!
   symbol: String!
   address: String!
-  nftCount: Int!
 
   factory: Factory!
   implementation: Implementation!
@@ -39,8 +35,6 @@ type Collection @entity {
   owner: Account!
 
   createdAtTimestamp: BigInt!
-  lastUpdatedAtTimestamp: BigInt!
-  lastActivityAtTimestamp: BigInt!
 
   nfts: [NFT!]! @derivedFrom(field: "collection")
 }
@@ -49,59 +43,53 @@ type Engine @entity {
   id: ID!
   address: String!
   name: String!
-  collectionCount: Int!
-  mintedNftsCount: Int!
 
-  releasedAtTimestamp: BigInt!
-  lastUpdatedAtTimestamp: BigInt!
-  lastInstalledAtTimestamp: BigInt!
+  createdAtTimestamp: BigInt!
 
   collections: [Collection!]! @derivedFrom(field: "engine")
-  mintedNfts: [NFT!]! @derivedFrom(field: "mintedByEngine")
 }
 
 type NFT @entity {
   id: ID!
   tokenId: BigInt!
-  totalAmount: BigInt!
+  totalSupply: BigInt!
 
   collection: Collection!
+
+  createdAtTimestamp: BigInt!
+
+  owners: [NFTOwner!]! @derivedFrom(field: "nft")
+  mints: [NFTMint!]! @derivedFrom(field: "nft")
+}
+
+type NFTOwner @entity {
+  id: ID!
+  nft: NFT!
   owner: Account!
+  balance: BigInt!
+
+  createdAtTimestamp: BigInt!
+}
+
+type NFTMint @entity {
+  id: ID!
+  nft: NFT!
+
   mintedBy: Account!
   mintedTo: Account!
   mintedByEngine: Engine!
-
-  createdAtTimestamp: BigInt!
-  lastActivityAtTimestamp: BigInt!
-
-  balances: [NFTBalance!]! @derivedFrom(field: "nft")
-}
-
-type NFTBalance @entity {
-  id: ID!
   amount: BigInt!
 
-  nft: NFT!
-  owner: Account!
-
-  lastUpdatedAtTimestamp: BigInt!
+  createdAtTimestamp: BigInt!
 }
 
 type Account @entity {
   id: ID!
   address: String!
-  createdCollectionsCount: Int!
-  ownedCollectionsCount: Int!
-  ownedNftsCount: Int!
-  mintedNftsCount: Int!
-  receivedNftsCount: Int!
-
-  firstSeenAtTimestamp: BigInt!
-  lastSeenAtTimestamp: BigInt!
 
   createdCollections: [Collection!]! @derivedFrom(field: "creator")
   ownedCollections: [Collection!]! @derivedFrom(field: "owner")
-  ownedNfts: [NFT!]! @derivedFrom(field: "owner")
-  mintedNfts: [NFT!]! @derivedFrom(field: "mintedBy")
-  receivedNfts: [NFT!]! @derivedFrom(field: "mintedTo")
+  ownedNfts: [NFTOwner!]! @derivedFrom(field: "owner")
+  mintedNfts: [NFTMint!]! @derivedFrom(field: "mintedBy")
+  receivedNfts: [NFTMint!]! @derivedFrom(field: "mintedTo")
 }
