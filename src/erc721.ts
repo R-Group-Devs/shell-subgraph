@@ -9,8 +9,6 @@ export function handleTransfer(event: Transfer): void {
     event.address,
     engineAddress,
     event.params.tokenId,
-    event.block.timestamp,
-    event.transaction.from,
     event.params.from,
     event.params.to,
     BigInt.fromI32(1),

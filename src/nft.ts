@@ -17,13 +17,12 @@ export const handleNftTransfer = (
   collectionAddress: Address,
   engineAddress: Address,
   tokenId: BigInt,
-  timestamp: BigInt,
-  operator: Address,
   from: Address,
   to: Address,
   amount: BigInt,
   event: ethereum.Event
 ): void => {
+  const timestamp = event.block.timestamp;
   const nft = getOrCreateNft(collectionAddress, tokenId, timestamp);
   const engine = getOrCreateEngine(engineAddress, timestamp);
 
