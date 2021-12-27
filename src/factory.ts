@@ -14,6 +14,7 @@ export function handleImplementationRegistered(event: ImplementationRegistered):
 
   const implementation = new Implementation(implementationId);
   implementation.name = event.params.name;
+  implementation.factory = factory.id;
   implementation.address = implementationId;
   implementation.collectionCount = 0;
   implementation.nftCount = 0;
@@ -55,6 +56,7 @@ export function handleCollectionCreated(event: CollectionCreated): void {
   implementation.collectionCount += 1;
   implementation.save();
 
+  collection.factory = factory.id;
   collection.implementation = implementationId;
   collection.name = contract.name();
   collection.symbol = contract.symbol();
@@ -64,7 +66,6 @@ export function handleCollectionCreated(event: CollectionCreated): void {
   collection.createdAtTimestamp = timestamp;
   collection.lastUpdatedAtTimestamp = timestamp;
   collection.lastActivityAtTimestamp = timestamp;
-  collection.factory = factory.id;
   collection.engine = engine.id;
   collection.creator = creator.id;
   collection.save();

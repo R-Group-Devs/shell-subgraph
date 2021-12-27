@@ -31,8 +31,10 @@ export const getOrCreateAccount = (address: Address, timestamp: BigInt): Account
   account = new Account(id);
   account.address = id;
   account.createdCollectionsCount = 0;
+  account.ownedCollectionsCount = 0;
   account.mintedNftsCount = 0;
   account.ownedNftsCount = 0;
+  account.receivedNftsCount = 0;
   account.firstSeenAtTimestamp = timestamp;
   account.lastSeenAtTimestamp = timestamp;
   account.save();
@@ -75,6 +77,7 @@ export const getOrCreateNft = (collectionAddress: Address, tokenId: BigInt, time
 
   nft = new NFT(nftId);
   nft.tokenId = tokenId;
+  nft.totalAmount = BigInt.fromI32(0);
   nft.collection = collection.id;
   nft.owner = getOrCreateAccount(contract.ownerOf(tokenId), timestamp).id;
   nft.createdAtTimestamp = timestamp;
@@ -92,7 +95,7 @@ export const getOrCreateNFTBalance = (nft: NFT, address: Address, timestamp: Big
   }
   balance = new NFTBalance(balanceId);
   balance.nft = nft.id;
-  balance.balance = BigInt.fromI32(0);
+  balance.amount = BigInt.fromI32(0);
   balance.owner = owner.id;
   balance.lastUpdatedAtTimestamp = timestamp;
   balance.save();

@@ -54,7 +54,7 @@ export function handleTransfer(event: Transfer): void {
   // if not a burn
   if (event.params.to.notEqual(ZERO_ADDRESS)) {
     const balance = getOrCreateNFTBalance(nft, event.params.to, timestamp);
-    balance.balance = BigInt.fromI32(1);
+    balance.amount = BigInt.fromI32(1);
     balance.save();
   }
 

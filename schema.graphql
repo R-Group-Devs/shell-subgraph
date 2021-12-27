@@ -8,6 +8,7 @@ type Factory @entity {
   createdAtTimestamp: BigInt!
 
   collections: [Collection!]! @derivedFrom(field: "factory")
+  implementations: [Implementation!]! @derivedFrom(field: "factory")
 }
 
 type Implementation @entity {
@@ -16,6 +17,8 @@ type Implementation @entity {
   address: String!
   collectionCount: Int!
   nftCount: Int!
+
+  factory: Factory!
 
   createdAtTimestamp: BigInt!
 
@@ -29,8 +32,8 @@ type Collection @entity {
   address: String!
   nftCount: Int!
 
-  implementation: Implementation!
   factory: Factory!
+  implementation: Implementation!
   engine: Engine!
   creator: Account!
   owner: Account!
@@ -60,6 +63,7 @@ type Engine @entity {
 type NFT @entity {
   id: ID!
   tokenId: BigInt!
+  totalAmount: BigInt!
 
   collection: Collection!
   owner: Account!
@@ -75,7 +79,7 @@ type NFT @entity {
 
 type NFTBalance @entity {
   id: ID!
-  balance: BigInt!
+  amount: BigInt!
 
   nft: NFT!
   owner: Account!
@@ -87,13 +91,17 @@ type Account @entity {
   id: ID!
   address: String!
   createdCollectionsCount: Int!
+  ownedCollectionsCount: Int!
   ownedNftsCount: Int!
   mintedNftsCount: Int!
+  receivedNftsCount: Int!
 
   firstSeenAtTimestamp: BigInt!
   lastSeenAtTimestamp: BigInt!
 
   createdCollections: [Collection!]! @derivedFrom(field: "creator")
+  ownedCollections: [Collection!]! @derivedFrom(field: "owner")
   ownedNfts: [NFT!]! @derivedFrom(field: "owner")
   mintedNfts: [NFT!]! @derivedFrom(field: "mintedBy")
+  receivedNfts: [NFT!]! @derivedFrom(field: "mintedTo")
 }
