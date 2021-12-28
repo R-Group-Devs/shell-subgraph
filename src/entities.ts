@@ -81,6 +81,7 @@ export const getOrCreateNFTOwner = (nft: NFT, ownerAddress: Address, timestamp: 
 
   nftOwner = new NFTOwner(nftOwnerId);
   nftOwner.nft = nft.id;
+  nftOwner.collection = nft.collection;
   nftOwner.owner = owner.id;
   nftOwner.balance = BigInt.fromI32(0);
   nftOwner.createdAtTimestamp = timestamp;
@@ -96,6 +97,7 @@ export const createNftEvent = (nft: NFT, type: string, engine: Engine, event: et
   const eventId = `${event.transaction.hash.toHexString()}-${event.logIndex}`;
   const nftEvent = new NFTEvent(eventId);
   nftEvent.nft = nft.id;
+  nftEvent.collection = nft.collection;
   nftEvent.eventType = type;
   nftEvent.operator = getOrCreateAccount(event.transaction.from, timestamp).id;
   nftEvent.engine = engine.id;

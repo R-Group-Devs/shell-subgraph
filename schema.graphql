@@ -28,7 +28,7 @@ type Collection @entity {
   symbol: String!
   address: String!
 
-  factory: Factory!
+  factory: Factory! # denormalized (implementation -> factory)
   implementation: Implementation!
   engine: Engine!
   creator: Account!
@@ -37,6 +37,7 @@ type Collection @entity {
   createdAtTimestamp: BigInt!
 
   nfts: [NFT!]! @derivedFrom(field: "collection")
+  nftEvents: [NFTEvent!]! @derivedFrom(field: "collection")
 }
 
 type Engine @entity {
@@ -66,6 +67,7 @@ type NFT @entity {
 type NFTOwner @entity {
   id: ID!
   nft: NFT!
+  collection: Collection! # denormalized (nft -> collection)
   owner: Account!
   balance: BigInt!
 
@@ -84,6 +86,7 @@ enum NFTEventType {
 type NFTEvent @entity {
   id: ID!
   nft: NFT!
+  collection: Collection! # denormalized (nft -> collection)
   eventType: NFTEventType!
   operator: Account!
   engine: Engine!
