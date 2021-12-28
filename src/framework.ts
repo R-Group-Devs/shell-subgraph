@@ -28,10 +28,16 @@ export function handleOwnershipTransferred(event: OwnershipTransferred): void {
 export function handleEngineInstalled(event: EngineInstalled): void {
   const collectionId = event.address.toHexString();
   const collection = Collection.load(collectionId);
+  const engine = getOrCreateEngine(event.params.engine, event.block.timestamp);
+
   if (!collection) throw new Error(`collection does not yet exist: ${collectionId}`);
-  collection.engine = getOrCreateEngine(event.params.engine, event.block.timestamp).id;
+  collection.engine = engine.id;
   collection.lastUpdatedAtTimestamp = event.block.timestamp;
   collection.save();
+
+  engine.totalInstallCount += 1;
+  engine.lastInstalledAtTimestamp = event.block.timestamp;
+  engine.save();
 }
 
 export function handleCollectionIntUpdated(event: CollectionIntUpdated): void {

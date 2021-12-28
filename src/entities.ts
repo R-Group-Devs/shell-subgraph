@@ -45,6 +45,8 @@ export const getOrCreateEngine = (address: Address, timestamp: BigInt): Engine =
   engine.address = engineId;
   engine.name = contract.getEngineName();
   engine.createdAtTimestamp = timestamp;
+  engine.totalInstallCount = 0;
+  engine.createdNftsCount = 0;
 
   engine.save();
   return engine;
@@ -61,10 +63,16 @@ export const getOrCreateNft = (collectionAddress: Address, tokenId: BigInt, time
     return nft;
   }
 
+  const engine = Engine.load(collection.engine);
+  if (!engine) throw new Error(`engine ${collection.engine} not yet indexed`);
+  engine.createdNftsCount += 1;
+  engine.save();
+
   nft = new NFT(nftId);
   nft.tokenId = tokenId;
   nft.totalSupply = BigInt.fromI32(0);
   nft.collection = collection.id;
+  nft.createdByEngine = engine.id;
   nft.createdAtTimestamp = timestamp;
 
   collection.nftCount += 1;

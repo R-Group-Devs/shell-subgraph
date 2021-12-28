@@ -47,11 +47,15 @@ type Engine @entity {
   id: ID!
   address: String!
   name: String!
+  totalInstallCount: Int!
+  createdNftsCount: Int!
 
   createdAtTimestamp: BigInt!
+  lastInstalledAtTimestamp: BigInt!
 
   collections: [Collection!]! @derivedFrom(field: "engine")
   nftEvents: [NFTEvent!]! @derivedFrom(field: "engine")
+  createdNfts: [NFT!]! @derivedFrom(field: "createdByEngine")
 }
 
 type NFT @entity {
@@ -60,6 +64,7 @@ type NFT @entity {
   totalSupply: BigInt!
 
   collection: Collection!
+  createdByEngine: Engine!
 
   createdAtTimestamp: BigInt!
 
