@@ -48,7 +48,8 @@ export const getOrCreateEngine = (address: Address, timestamp: BigInt): Engine =
   engine.address = engineId;
   engine.name = contract.getEngineName();
   engine.createdAtTimestamp = timestamp;
-  engine.totalInstallCount = 0;
+  engine.totalCollectionInstallCount = 0;
+  engine.totalNftInstallCount = 0;
   engine.createdNftsCount = 0;
 
   engine.save();

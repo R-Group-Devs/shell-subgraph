@@ -53,6 +53,8 @@ templates:
       handler: handleOwnershipTransferred
     - event: EngineInstalled(address)
       handler: handleEngineInstalled
+    - event: TokenEngineInstalled(uint256,address)
+      handler: handleTokenEngineInstalled
     - event: CollectionIntUpdated(uint8,string,uint256)
       handler: handleCollectionIntUpdated
     - event: CollectionStringUpdated(uint8,string,string)

@@ -1,6 +1,7 @@
 import { Collection } from "../generated/schema";
 import { CollectionIntUpdated, EngineInstalled, TokenIntUpdated, TokenStringUpdated } from "../generated/ShellFactoryDatasource/IShellFramework";
-import { CollectionStringUpdated, OwnershipTransferred } from "../generated/templates/IShellFrameworkDatasource/IShellFramework";
+import { CollectionStringUpdated, OwnershipTransferred, TokenEngineInstalled } from "../generated/templates/IShellFrameworkDatasource/IShellFramework";
+import { ZERO_ADDRESS } from "./constants";
 import { getOrCreateAccount, getOrCreateEngine, getOrCreateNft, getOrCreateTokenStorageValue } from "./entities";
 
 const storageEnum = (valueFromEvent: u32): string => {
@@ -35,7 +36,25 @@ export function handleEngineInstalled(event: EngineInstalled): void {
   collection.lastUpdatedAtTimestamp = event.block.timestamp;
   collection.save();
 
-  engine.totalInstallCount += 1;
+  engine.totalCollectionInstallCount += 1;
+  engine.lastInstalledAtTimestamp = event.block.timestamp;
+  engine.save();
+}
+
+export function handleTokenEngineInstalled(event: TokenEngineInstalled): void {
+  const timestamp = event.block.timestamp;
+  const engine = getOrCreateEngine(event.params.engine, timestamp);
+  const nft = getOrCreateNft(event.address, event.params.tokenId, timestamp);
+
+  if (event.params.engine.equals(ZERO_ADDRESS)) {
+    nft.engine = null;
+  } else {
+    nft.engine = engine.id;
+  }
+  nft.lastActivityAtTimestamp = event.block.timestamp;
+  nft.save();
+
+  engine.totalNftInstallCount += 1;
   engine.lastInstalledAtTimestamp = event.block.timestamp;
   engine.save();
 }
