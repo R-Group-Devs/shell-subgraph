@@ -1,6 +1,9 @@
 type Factory @entity {
   id: ID!
   address: String!
+  implementationCount: Int!
+  collectionCount: Int!
+  nftCount: Int!
 
   owner: Account!
 
@@ -40,6 +43,7 @@ type Collection @entity {
   lastActivityAtTimestamp: BigInt!
 
   nfts: [NFT!]! @derivedFrom(field: "collection")
+  nftOwners: [NFTOwner!]! @derivedFrom(field: "collection")
   nftEvents: [NFTEvent!]! @derivedFrom(field: "collection")
 }
 
@@ -115,8 +119,8 @@ type Account @entity {
   ownedCollections: [Collection!]! @derivedFrom(field: "owner")
   ownedNfts: [NFTOwner!]! @derivedFrom(field: "owner")
   nftEventsAsOperator: [NFTEvent!]! @derivedFrom(field: "operator")
-  nftEventsAsTo: [NFTEvent!]! @derivedFrom(field: "operator")
-  nftEventsAsFrom: [NFTEvent!]! @derivedFrom(field: "operator")
+  nftEventsAsTo: [NFTEvent!]! @derivedFrom(field: "to")
+  nftEventsAsFrom: [NFTEvent!]! @derivedFrom(field: "from")
 }
 
 enum StorageLocation {

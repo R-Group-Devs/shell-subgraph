@@ -12,6 +12,9 @@ export const getOrCreateFactory = (address: Address, timestamp: BigInt): Factory
 
   factory = new Factory(factoryId);
   factory.address = factoryAddress;
+  factory.implementationCount = 0;
+  factory.collectionCount = 0;
+  factory.nftCount = 0;
   factory.createdAtTimestamp = timestamp;
 
   factory.save();
@@ -67,6 +70,11 @@ export const getOrCreateNft = (collectionAddress: Address, tokenId: BigInt, time
   if (!engine) throw new Error(`engine ${collection.engine} not yet indexed`);
   engine.createdNftsCount += 1;
   engine.save();
+
+  const factory = Factory.load(collection.factory);
+  if (!factory) throw new Error(`factory ${collection.factory} not yet indexed`);
+  factory.nftCount += 1;
+  factory.save();
 
   nft = new NFT(nftId);
   nft.tokenId = tokenId;

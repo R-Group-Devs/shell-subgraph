@@ -51,6 +51,9 @@ export function handleCollectionCreated(event: CollectionCreated): void {
   const owner = getOrCreateAccount(contract.owner(), timestamp);
   const factory = getOrCreateFactory(dataSource.address(), timestamp);
 
+  factory.collectionCount += 1;
+  factory.save();
+
   const implementationId = event.params.implementation.toHexString();
   const implementation = Implementation.load(implementationId);
   if (!implementation) throw new Error(`implementation not indexed: ${implementationId}`);
