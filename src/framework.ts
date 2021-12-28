@@ -51,6 +51,8 @@ export function handleCollectionStringUpdated(event: CollectionStringUpdated): v
 export function handleTokenIntUpdated(event: TokenIntUpdated): void {
   const timestamp = event.block.timestamp;
   const nft = getOrCreateNft(event.address, event.params.tokenId, timestamp);
+  nft.lastActivityAtTimestamp = timestamp;
+  nft.save();
 
   const storage = getOrCreateTokenStorageValue(
     nft,
@@ -65,6 +67,8 @@ export function handleTokenIntUpdated(event: TokenIntUpdated): void {
 export function handleTokenStringUpdated(event: TokenStringUpdated): void {
   const timestamp = event.block.timestamp;
   const nft = getOrCreateNft(event.address, event.params.tokenId, timestamp);
+  nft.lastActivityAtTimestamp = timestamp;
+  nft.save();
 
   const storage = getOrCreateTokenStorageValue(
     nft,

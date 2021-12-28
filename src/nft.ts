@@ -55,6 +55,7 @@ export const handleNftTransfer = (
     if (fromOwner.balance.isZero()) {
       store.remove('NFTOwner', fromOwner.id);
     } else {
+      fromOwner.lastActivityAtTimestamp = timestamp;
       fromOwner.save();
     }
   }
@@ -62,6 +63,7 @@ export const handleNftTransfer = (
   if (!isBurn) {
     const toOwner = getOrCreateNFTOwner(nft, to, timestamp);
     toOwner.balance = toOwner.balance.plus(amount);
+    toOwner.lastActivityAtTimestamp = timestamp;
     toOwner.save();
   }
 
@@ -69,6 +71,8 @@ export const handleNftTransfer = (
   if (!collection) throw new Error(`collection does not yet exist: ${nft.collection}`);
   collection.lastActivityAtTimestamp = timestamp;
   collection.save();
+
+  nft.lastActivityAtTimestamp = timestamp;
 
   nft.save();
 }

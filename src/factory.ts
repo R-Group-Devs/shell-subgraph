@@ -14,6 +14,8 @@ export function handleImplementationRegistered(event: ImplementationRegistered):
   const implementationId = event.params.implementation.toHexString();
 
   const factory = getOrCreateFactory(dataSource.address(), event.block.timestamp);
+  factory.implementationCount += 1;
+  factory.save();
 
   const implementation = new Implementation(implementationId);
   implementation.name = event.params.name;

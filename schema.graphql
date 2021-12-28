@@ -71,6 +71,7 @@ type NFT @entity {
   createdByEngine: Engine!
 
   createdAtTimestamp: BigInt!
+  lastActivityAtTimestamp: BigInt!
 
   owners: [NFTOwner!]! @derivedFrom(field: "nft")
   events: [NFTEvent!]! @derivedFrom(field: "nft")
@@ -85,6 +86,7 @@ type NFTOwner @entity {
   balance: BigInt!
 
   createdAtTimestamp: BigInt!
+  lastActivityAtTimestamp: BigInt!
 }
 
 enum NFTEventType {

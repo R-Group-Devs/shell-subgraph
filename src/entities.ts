@@ -82,6 +82,7 @@ export const getOrCreateNft = (collectionAddress: Address, tokenId: BigInt, time
   nft.collection = collection.id;
   nft.createdByEngine = engine.id;
   nft.createdAtTimestamp = timestamp;
+  nft.lastActivityAtTimestamp = timestamp;
 
   collection.nftCount += 1;
   collection.save();
@@ -104,6 +105,7 @@ export const getOrCreateNFTOwner = (nft: NFT, ownerAddress: Address, timestamp: 
   nftOwner.owner = owner.id;
   nftOwner.balance = BigInt.fromI32(0);
   nftOwner.createdAtTimestamp = timestamp;
+  nftOwner.lastActivityAtTimestamp = timestamp;
 
   nftOwner.save();
   return nftOwner;
