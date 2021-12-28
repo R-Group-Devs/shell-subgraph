@@ -42,6 +42,7 @@ export function handleCollectionCreated(event: CollectionCreated): void {
   collection.name = contract.name();
   collection.symbol = contract.symbol();
   collection.address = collectionId;
+  collection.nftCount = 0;
 
   // update engine and account
 

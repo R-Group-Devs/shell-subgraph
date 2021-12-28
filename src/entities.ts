@@ -67,6 +67,9 @@ export const getOrCreateNft = (collectionAddress: Address, tokenId: BigInt, time
   nft.collection = collection.id;
   nft.createdAtTimestamp = timestamp;
 
+  collection.nftCount += 1;
+  collection.save();
+
   nft.save();
   return nft;
 }

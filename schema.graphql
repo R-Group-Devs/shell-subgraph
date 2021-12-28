@@ -27,6 +27,7 @@ type Collection @entity {
   name: String!
   symbol: String!
   address: String!
+  nftCount: Int!
 
   factory: Factory! # denormalized (implementation -> factory)
   implementation: Implementation!
