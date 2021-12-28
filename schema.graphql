@@ -35,6 +35,8 @@ type Collection @entity {
   owner: Account!
 
   createdAtTimestamp: BigInt!
+  lastUpdatedAtTimestamp: BigInt!
+  lastActivityAtTimestamp: BigInt!
 
   nfts: [NFT!]! @derivedFrom(field: "collection")
   nftEvents: [NFTEvent!]! @derivedFrom(field: "collection")

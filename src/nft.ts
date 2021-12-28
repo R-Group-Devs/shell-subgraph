@@ -1,5 +1,5 @@
 import { Address, BigInt, ethereum, store } from "@graphprotocol/graph-ts";
-import { Engine } from "../generated/schema";
+import { Collection, Engine } from "../generated/schema";
 import { ZERO_ADDRESS } from "./constants";
 import { createNftEvent, getOrCreateAccount, getOrCreateEngine, getOrCreateNft, getOrCreateNFTOwner } from "./entities";
 
@@ -64,6 +64,11 @@ export const handleNftTransfer = (
     toOwner.balance = toOwner.balance.plus(amount);
     toOwner.save();
   }
+
+  const collection = Collection.load(nft.collection);
+  if (!collection) throw new Error(`collection does not yet exist: ${nft.collection}`);
+  collection.lastActivityAtTimestamp = timestamp;
+  collection.save();
 
   nft.save();
 }

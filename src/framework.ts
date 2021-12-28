@@ -21,6 +21,7 @@ export function handleOwnershipTransferred(event: OwnershipTransferred): void {
   const collection = Collection.load(collectionId);
   if (!collection) throw new Error(`collection does not yet exist: ${collectionId}`);
   collection.owner = getOrCreateAccount(event.params.newOwner, event.block.timestamp).id;
+  collection.lastUpdatedAtTimestamp = event.block.timestamp;
   collection.save();
 }
 
@@ -29,6 +30,7 @@ export function handleEngineInstalled(event: EngineInstalled): void {
   const collection = Collection.load(collectionId);
   if (!collection) throw new Error(`collection does not yet exist: ${collectionId}`);
   collection.engine = getOrCreateEngine(event.params.engine, event.block.timestamp).id;
+  collection.lastUpdatedAtTimestamp = event.block.timestamp;
   collection.save();
 }
 

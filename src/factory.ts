@@ -60,6 +60,10 @@ export function handleCollectionCreated(event: CollectionCreated): void {
   collection.creator = creator.id;
   collection.owner = owner.id;
 
+  collection.createdAtTimestamp = timestamp;
+  collection.lastUpdatedAtTimestamp = timestamp;
+  collection.lastActivityAtTimestamp = timestamp;
+
   collection.save();
 
   // spawn new datasources
