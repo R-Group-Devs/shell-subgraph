@@ -1,5 +1,5 @@
 import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
-import { Account, Collection, Engine, Factory, NFT, NFTEvent, NFTOwner } from "../generated/schema";
+import { Account, Collection, Engine, Factory, NFT, NFTEvent, NFTOwner, TokenStorageValue } from "../generated/schema";
 import { IEngine } from '../generated/ShellFactoryDatasource/IEngine';
 
 export const getOrCreateFactory = (address: Address, timestamp: BigInt): Factory => {
@@ -105,4 +105,25 @@ export const createNftEvent = (nft: NFT, type: string, engine: Engine, event: et
 
   nftEvent.save();
   return nftEvent;
+}
+
+export const getOrCreateTokenStorageValue = (
+  nft: NFT, location: string, type: string, key: string, timestamp: BigInt): TokenStorageValue =>
+{
+  const storageId = `${nft.id}-${location}-${type}-${key}`;
+  let storage = TokenStorageValue.load(storageId);
+  if (storage != null) {
+    return storage;
+  }
+
+  storage = new TokenStorageValue(storageId);
+  storage.nft = nft.id;
+  storage.collection = nft.collection;
+  storage.location = location;
+  storage.storageType = type;
+  storage.key = key;
+  storage.createdAtTimestamp = timestamp;
+
+  storage.save();
+  return storage;
 }

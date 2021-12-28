@@ -62,6 +62,7 @@ type NFT @entity {
 
   owners: [NFTOwner!]! @derivedFrom(field: "nft")
   events: [NFTEvent!]! @derivedFrom(field: "nft")
+  storage: [TokenStorageValue!]! @derivedFrom(field: "nft")
 }
 
 type NFTOwner @entity {
@@ -108,4 +109,42 @@ type Account @entity {
   nftEventsAsOperator: [NFTEvent!]! @derivedFrom(field: "operator")
   nftEventsAsTo: [NFTEvent!]! @derivedFrom(field: "operator")
   nftEventsAsFrom: [NFTEvent!]! @derivedFrom(field: "operator")
+}
+
+enum StorageLocation {
+  ENGINE
+  MINT_DATA
+  FRAMEWORK
+}
+
+enum StorageType {
+  INT
+  STRING
+}
+
+type TokenStorageValue @entity {
+  id: ID!
+  nft: NFT!
+  collection: Collection! # denormalized (nft -> collection)
+  location: StorageLocation!
+  storageType: StorageType!
+
+  key: String!
+  stringValue: String # null if int
+  intValue: BigInt # null if string
+
+  createdAtTimestamp: BigInt!
+}
+
+type CollectionStorageValue @entity {
+  id: ID!
+  collection: Collection! # denormalized (nft -> collection)
+  location: StorageLocation!
+  storageType: StorageType!
+
+  key: String!
+  stringValue: String # null if int
+  intValue: BigInt # null if string
+
+  createdAtTimestamp: BigInt!
 }

@@ -51,6 +51,16 @@ templates:
     eventHandlers:
     - event: OwnershipTransferred(indexed address,indexed address)
       handler: handleOwnershipTransferred
+    - event: EngineInstalled(address)
+      handler: handleEngineInstalled
+    - event: CollectionIntUpdated(uint8,string,uint256)
+      handler: handleCollectionIntUpdated
+    - event: CollectionStringUpdated(uint8,string,string)
+      handler: handleCollectingStringUpdated
+    - event: TokenIntUpdated(uint8,uint256,string,uint256)
+      handler: handleTokenIntUpdated
+    - event: TokenStringUpdated(uint8,uint256,string,string)
+      handler: handleTokenStringUpdated
 - name: IShellERC721Datasource
   kind: ethereum/contract
   network: {{network}}
