@@ -1,6 +1,12 @@
-import { Address, BigInt, ethereum } from "@graphprotocol/graph-ts";
-import { Account, Collection, Engine, Factory, NFT, NFTEvent, NFTOwner, TokenStorageValue } from "../generated/schema";
+import { Address, BigInt } from "@graphprotocol/graph-ts";
+import { Account, Collection, Engine, Factory, Fork, NFT, NFTOwner } from "../generated/schema";
 import { IEngine } from '../generated/ShellFactoryDatasource/IEngine';
+
+export const getCollection = (address: Address): Collection => {
+  const collection = Collection.load(address.toHexString());
+  if (!collection) throw new Error(`collection not indexed: ${address}`);
+  return collection;
+}
 
 export const getOrCreateFactory = (address: Address, timestamp: BigInt): Factory => {
   const factoryAddress = address.toHexString();
@@ -12,9 +18,6 @@ export const getOrCreateFactory = (address: Address, timestamp: BigInt): Factory
 
   factory = new Factory(factoryId);
   factory.address = factoryAddress;
-  factory.implementationCount = 0;
-  factory.collectionCount = 0;
-  factory.nftCount = 0;
   factory.createdAtTimestamp = timestamp;
 
   factory.save();
@@ -35,6 +38,22 @@ export const getOrCreateAccount = (address: Address, timestamp: BigInt): Account
   return account;
 }
 
+export const getOrCreateFork = (collection: Collection, id: BigInt, timestamp: BigInt): Fork => {
+  const forkId = `${collection.id}-fork-${id}`;
+  let fork = Fork.load(forkId);
+  if (fork != null) {
+    return fork;
+  }
+
+  fork = new Fork(forkId);
+  fork.forkId = id;
+  fork.collection = collection.id;
+  fork.createdAtTimestamp = timestamp;
+
+  fork.save();
+  return fork;
+}
+
 export const getOrCreateEngine = (address: Address, timestamp: BigInt): Engine => {
   const engineId = address.toHexString();
   let engine = Engine.load(engineId);
@@ -46,11 +65,8 @@ export const getOrCreateEngine = (address: Address, timestamp: BigInt): Engine =
 
   engine = new Engine(engineId);
   engine.address = engineId;
-  engine.name = contract.getEngineName();
+  engine.name = contract.name();
   engine.createdAtTimestamp = timestamp;
-  engine.totalCollectionInstallCount = 0;
-  engine.totalNftInstallCount = 0;
-  engine.createdNftsCount = 0;
 
   engine.save();
   return engine;
@@ -67,26 +83,11 @@ export const getOrCreateNft = (collectionAddress: Address, tokenId: BigInt, time
     return nft;
   }
 
-  const engine = Engine.load(collection.engine);
-  if (!engine) throw new Error(`engine ${collection.engine} not yet indexed`);
-  engine.createdNftsCount += 1;
-  engine.save();
-
-  const factory = Factory.load(collection.factory);
-  if (!factory) throw new Error(`factory ${collection.factory} not yet indexed`);
-  factory.nftCount += 1;
-  factory.save();
-
   nft = new NFT(nftId);
   nft.tokenId = tokenId;
   nft.totalSupply = BigInt.fromI32(0);
   nft.collection = collection.id;
-  nft.createdByEngine = engine.id;
   nft.createdAtTimestamp = timestamp;
-  nft.lastActivityAtTimestamp = timestamp;
-
-  collection.nftCount += 1;
-  collection.save();
 
   nft.save();
   return nft;
@@ -112,40 +113,39 @@ export const getOrCreateNFTOwner = (nft: NFT, ownerAddress: Address, timestamp: 
   return nftOwner;
 }
 
+// export const createNftEvent = (nft: NFT, type: string, engine: Engine, event: ethereum.Event): NFTEvent => {
+//   const timestamp = event.block.timestamp;
 
-export const createNftEvent = (nft: NFT, type: string, engine: Engine, event: ethereum.Event): NFTEvent => {
-  const timestamp = event.block.timestamp;
+//   const eventId = `${event.transaction.hash.toHexString()}-${event.logIndex}`;
+//   const nftEvent = new NFTEvent(eventId);
+//   nftEvent.nft = nft.id;
+//   nftEvent.collection = nft.collection;
+//   nftEvent.eventType = type;
+//   nftEvent.operator = getOrCreateAccount(event.transaction.from, timestamp).id;
+//   nftEvent.engine = engine.id;
+//   nftEvent.createdAtTimestamp = timestamp;
 
-  const eventId = `${event.transaction.hash.toHexString()}-${event.logIndex}`;
-  const nftEvent = new NFTEvent(eventId);
-  nftEvent.nft = nft.id;
-  nftEvent.collection = nft.collection;
-  nftEvent.eventType = type;
-  nftEvent.operator = getOrCreateAccount(event.transaction.from, timestamp).id;
-  nftEvent.engine = engine.id;
-  nftEvent.createdAtTimestamp = timestamp;
+//   nftEvent.save();
+//   return nftEvent;
+// }
 
-  nftEvent.save();
-  return nftEvent;
-}
+// export const getOrCreateTokenStorageValue = (
+//   nft: NFT, location: string, type: string, key: string, timestamp: BigInt): TokenStorageValue =>
+// {
+//   const storageId = `${nft.id}-${location}-${type}-${key}`;
+//   let storage = TokenStorageValue.load(storageId);
+//   if (storage != null) {
+//     return storage;
+//   }
 
-export const getOrCreateTokenStorageValue = (
-  nft: NFT, location: string, type: string, key: string, timestamp: BigInt): TokenStorageValue =>
-{
-  const storageId = `${nft.id}-${location}-${type}-${key}`;
-  let storage = TokenStorageValue.load(storageId);
-  if (storage != null) {
-    return storage;
-  }
+//   storage = new TokenStorageValue(storageId);
+//   storage.nft = nft.id;
+//   storage.collection = nft.collection;
+//   storage.location = location;
+//   storage.storageType = type;
+//   storage.key = key;
+//   storage.createdAtTimestamp = timestamp;
 
-  storage = new TokenStorageValue(storageId);
-  storage.nft = nft.id;
-  storage.collection = nft.collection;
-  storage.location = location;
-  storage.storageType = type;
-  storage.key = key;
-  storage.createdAtTimestamp = timestamp;
-
-  storage.save();
-  return storage;
-}
+//   storage.save();
+//   return storage;
+// }

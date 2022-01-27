@@ -34,7 +34,7 @@ dataSources:
     - event: OwnershipTransferred(indexed address,indexed address)
       handler: handleOwnershipTransferred
 templates:
-- name: IShellFrameworkDatasource
+- name: ShellFrameworkDatasource
   kind: ethereum/contract
   network: {{network}}
   source:
@@ -48,26 +48,16 @@ templates:
     abis:
     - name: IShellFramework
       file: ./abis/IShellFramework.json
+    - name: IEngine
+      file: ./abis/IEngine.json
     eventHandlers:
-    - event: OwnershipTransferred(indexed address,indexed address)
-      handler: handleOwnershipTransferred
-    - event: EngineInstalled(address)
-      handler: handleEngineInstalled
-    - event: TokenEngineInstalled(uint256,address)
-      handler: handleTokenEngineInstalled
-    - event: CollectionIntUpdated(uint8,string,uint256)
-      handler: handleCollectionIntUpdated
-    - event: CollectionStringUpdated(uint8,string,string)
-      handler: handleCollectingStringUpdated
-    - event: TokenIntUpdated(uint8,uint256,string,uint256)
-      handler: handleTokenIntUpdated
-    - event: TokenStringUpdated(uint8,uint256,string,string)
-      handler: handleTokenStringUpdated
-- name: IShellERC721Datasource
+    - event: ForkCreated(uint256,address,address)
+      handler: handleForkCreated
+- name: ERC721Datasource
   kind: ethereum/contract
   network: {{network}}
   source:
-    abi: IShellERC721
+    abi: IERC721
   mapping:
     kind: ethereum/events
     apiVersion: 0.0.5
@@ -77,18 +67,16 @@ templates:
     abis:
     - name: IShellFramework
       file: ./abis/IShellFramework.json
-    - name: IShellERC721
-      file: ./abis/IShellERC721.json
     - name: IERC721
       file: ./abis/IERC721Upgradeable.json
     eventHandlers:
     - event: Transfer(indexed address,indexed address,indexed uint256)
       handler: handleTransfer
-- name: IShellERC1155Datasource
+- name: ERC1155Datasource
   kind: ethereum/contract
   network: {{network}}
   source:
-    abi: IShellERC1155
+    abi: IERC1155
   mapping:
     kind: ethereum/events
     apiVersion: 0.0.5
@@ -98,8 +86,6 @@ templates:
     abis:
     - name: IShellFramework
       file: ./abis/IShellFramework.json
-    - name: IShellERC1155
-      file: ./abis/IShellERC1155.json
     - name: IERC1155
       file: ./abis/IERC1155Upgradeable.json
     eventHandlers:

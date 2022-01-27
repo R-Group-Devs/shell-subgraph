@@ -1,0 +1,167 @@
+type Factory @entity {
+  id: ID!
+  address: String!
+  # implementationCount: Int!
+  # collectionCount: Int!
+  # nftCount: Int!
+
+  owner: Account!
+
+  createdAtTimestamp: BigInt!
+
+  collections: [Collection!]! @derivedFrom(field: "factory")
+  implementations: [Implementation!]! @derivedFrom(field: "factory")
+}
+
+type Implementation @entity {
+  id: ID!
+  name: String!
+  address: String!
+
+  factory: Factory!
+
+  createdAtTimestamp: BigInt!
+
+  collections: [Collection!]! @derivedFrom(field: "implementation")
+}
+
+type Collection @entity {
+  id: ID!
+  name: String!
+  symbol: String!
+  address: String!
+  # nftCount: Int!
+
+  factory: Factory! # denormalized (implementation -> factory)
+  implementation: Implementation!
+  creator: Account!
+  # engine: Engine! # denormalized (fork 0 -> engine)
+  # owner: Account! # denormalized (fork 0 -> owner)
+
+  createdAtTimestamp: BigInt!
+  # lastUpdatedAtTimestamp: BigInt!
+  # lastActivityAtTimestamp: BigInt!
+
+  # nfts: [NFT!]! @derivedFrom(field: "collection")
+  # nftOwners: [NFTOwner!]! @derivedFrom(field: "collection")
+  # nftEvents: [NFTEvent!]! @derivedFrom(field: "collection")
+}
+
+type Engine @entity {
+  id: ID!
+  address: String!
+  name: String!
+  # totalCollectionInstallCount: Int!
+  # totalNftInstallCount: Int!
+  # createdNftsCount: Int!
+
+  createdAtTimestamp: BigInt!
+  # lastInstalledAtTimestamp: BigInt!
+
+  # nfts: [NFT!]! @derivedFrom(field: "engine")
+  # collections: [Collection!]! @derivedFrom(field: "engine")
+  # nftEvents: [NFTEvent!]! @derivedFrom(field: "engine")
+  # createdNfts: [NFT!]! @derivedFrom(field: "createdByEngine")
+}
+
+type NFT @entity {
+  id: ID!
+  tokenId: BigInt!
+  totalSupply: BigInt!
+
+  collection: Collection!
+  createdByEngine: Engine!
+  engine: Engine # null if using collection engine
+
+  createdAtTimestamp: BigInt!
+  lastActivityAtTimestamp: BigInt!
+
+  owners: [NFTOwner!]! @derivedFrom(field: "nft")
+  events: [NFTEvent!]! @derivedFrom(field: "nft")
+  storage: [TokenStorageValue!]! @derivedFrom(field: "nft")
+}
+
+type NFTOwner @entity {
+  id: ID!
+  nft: NFT!
+  collection: Collection! # denormalized (nft -> collection)
+  owner: Account!
+  balance: BigInt!
+
+  createdAtTimestamp: BigInt!
+  lastActivityAtTimestamp: BigInt!
+}
+
+enum NFTEventType {
+  TRANSFER
+  MINT
+  BURN
+  # ENGINE_INSTALL
+  # STORAGE_WRITE
+  # PUBLISH
+}
+
+type NFTEvent @entity {
+  id: ID!
+  nft: NFT!
+  collection: Collection! # denormalized (nft -> collection)
+  eventType: NFTEventType!
+  operator: Account!
+  engine: Engine!
+
+  to: Account
+  from: Account
+  amount: BigInt
+
+  createdAtTimestamp: BigInt!
+}
+
+type Account @entity {
+  id: ID!
+  address: String!
+
+  createdCollections: [Collection!]! @derivedFrom(field: "creator")
+  ownedCollections: [Collection!]! @derivedFrom(field: "owner")
+  ownedNfts: [NFTOwner!]! @derivedFrom(field: "owner")
+  nftEventsAsOperator: [NFTEvent!]! @derivedFrom(field: "operator")
+  nftEventsAsTo: [NFTEvent!]! @derivedFrom(field: "to")
+  nftEventsAsFrom: [NFTEvent!]! @derivedFrom(field: "from")
+}
+
+enum StorageLocation {
+  ENGINE
+  MINT_DATA
+  FRAMEWORK
+}
+
+enum StorageType {
+  INT
+  STRING
+}
+
+type TokenStorageValue @entity {
+  id: ID!
+  nft: NFT!
+  collection: Collection! # denormalized (nft -> collection)
+  location: StorageLocation!
+  storageType: StorageType!
+
+  key: String!
+  stringValue: String # null if int
+  intValue: BigInt # null if string
+
+  createdAtTimestamp: BigInt!
+}
+
+type CollectionStorageValue @entity {
+  id: ID!
+  collection: Collection! # denormalized (nft -> collection)
+  location: StorageLocation!
+  storageType: StorageType!
+
+  key: String!
+  stringValue: String # null if int
+  intValue: BigInt # null if string
+
+  createdAtTimestamp: BigInt!
+}

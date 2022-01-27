@@ -1,20 +1,17 @@
-import { ByteArray, dataSource, Bytes } from '@graphprotocol/graph-ts';
+import { dataSource} from '@graphprotocol/graph-ts';
 import { Collection, Implementation } from '../generated/schema';
 import { CollectionCreated, ImplementationRegistered, OwnershipTransferred } from '../generated/ShellFactoryDatasource/IShellFactory'
 import { IShellFramework } from '../generated/ShellFactoryDatasource/IShellFramework';
 import { IERC721 } from '../generated/ShellFactoryDatasource/IERC721';
 import { IERC1155 } from '../generated/ShellFactoryDatasource/IERC1155';
-import { getOrCreateAccount, getOrCreateEngine, getOrCreateFactory } from './entities';
-import { IShellERC721Datasource, IShellERC1155Datasource, IShellFrameworkDatasource } from '../generated/templates';
-
-const ERC721_INTERFACE_ID = Bytes.fromByteArray(Bytes.fromHexString('0x80ac58cd'));
-const ERC1155_INTERFACE_ID = Bytes.fromByteArray(Bytes.fromHexString('0xd9b67a26'));
+import { getOrCreateAccount, getOrCreateFactory } from './entities';
+import { ShellFrameworkDatasource, ERC721Datasource, ERC1155Datasource } from '../generated/templates';
+import { ERC721_INTERFACE_ID, ERC1155_INTERFACE_ID } from './constants';
 
 export function handleImplementationRegistered(event: ImplementationRegistered): void {
   const implementationId = event.params.implementation.toHexString();
 
   const factory = getOrCreateFactory(dataSource.address(), event.block.timestamp);
-  factory.implementationCount += 1;
   factory.save();
 
   const implementation = new Implementation(implementationId);
@@ -44,16 +41,12 @@ export function handleCollectionCreated(event: CollectionCreated): void {
   collection.name = contract.name();
   collection.symbol = contract.symbol();
   collection.address = collectionId;
-  collection.nftCount = 0;
 
   // update engine and account
 
-  const engine = getOrCreateEngine(contract.installedEngine(), timestamp);
   const creator = getOrCreateAccount(event.transaction.from, timestamp);
-  const owner = getOrCreateAccount(contract.owner(), timestamp);
   const factory = getOrCreateFactory(dataSource.address(), timestamp);
 
-  factory.collectionCount += 1;
   factory.save();
 
   const implementationId = event.params.implementation.toHexString();
@@ -62,30 +55,25 @@ export function handleCollectionCreated(event: CollectionCreated): void {
 
   collection.factory = factory.id;
   collection.implementation = implementation.id;
-  collection.engine = engine.id;
   collection.creator = creator.id;
-  collection.owner = owner.id;
-
   collection.createdAtTimestamp = timestamp;
-  collection.lastUpdatedAtTimestamp = timestamp;
-  collection.lastActivityAtTimestamp = timestamp;
 
   collection.save();
 
   // spawn new datasources
-  IShellFrameworkDatasource.create(collectionAddress);
+  ShellFrameworkDatasource.create(collectionAddress);
 
   {
     const resp = IERC721.bind(collectionAddress).try_supportsInterface(ERC721_INTERFACE_ID);
     if (!resp.reverted && resp.value === true) {
-      IShellERC721Datasource.create(collectionAddress);
+      ERC721Datasource.create(collectionAddress);
     }
   }
 
   {
     const resp = IERC1155.bind(collectionAddress).try_supportsInterface(ERC1155_INTERFACE_ID);
     if (!resp.reverted && resp.value === true) {
-      IShellERC1155Datasource.create(collectionAddress);
+      ERC1155Datasource.create(collectionAddress);
     }
   }
 
