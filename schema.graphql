@@ -43,6 +43,7 @@ type Fork @entity {
   engine: Engine!
 
   createdAtTimestamp: BigInt!
+
   nfts: [NFT!]! @derivedFrom(field: "fork")
 }
 
@@ -52,13 +53,15 @@ type Engine @entity {
   name: String!
 
   createdAtTimestamp: BigInt!
+
+  forks: [Fork!]! @derivedFrom(field: "engine")
 }
 
 type NFT @entity {
   id: ID!
   tokenId: BigInt!
   totalSupply: BigInt!
-  collection: Collection! # denormalized (fork -> collection)
+  collection: Collection!
   fork: Fork!
 
   createdAtTimestamp: BigInt!
@@ -71,10 +74,9 @@ type NFTOwner @entity {
   nft: NFT!
   owner: Account!
   balance: BigInt!
-  collection: Collection! # denormalized (nft -> fork -> collection)
+  collection: Collection!
 
   createdAtTimestamp: BigInt!
-  lastActivityAtTimestamp: BigInt!
 }
 
 type Account @entity {

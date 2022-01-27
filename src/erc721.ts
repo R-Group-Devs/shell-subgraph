@@ -1,14 +1,14 @@
-import {Transfer} from '../generated/templates/ERC721Datasource/IERC721'
+import { BigInt } from "@graphprotocol/graph-ts";
+import { Transfer } from '../generated/templates/ERC721Datasource/IERC721'
+import { handleNftTransfer } from './nft';
 
 export function handleTransfer(event: Transfer): void {
-  // const engineAddress = IShellFramework.bind(event.address).installedEngine();
-  // handleNftTransfer(
-  //   event.address,
-  //   engineAddress,
-  //   event.params.tokenId,
-  //   event.params.from,
-  //   event.params.to,
-  //   BigInt.fromI32(1),
-  //   event
-  // );
+  handleNftTransfer(
+    event.address,
+    event.params.tokenId,
+    event.params.from,
+    event.params.to,
+    BigInt.fromI32(1),
+    event
+  );
 }
