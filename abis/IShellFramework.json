@@ -109,25 +109,6 @@
         {
           "indexed": false,
           "internalType": "uint256",
-          "name": "tokenId",
-          "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "uint256",
-          "name": "forkId",
-          "type": "uint256"
-        }
-      ],
-      "name": "ForkJoined",
-      "type": "event"
-    },
-    {
-      "anonymous": false,
-      "inputs": [
-        {
-          "indexed": false,
-          "internalType": "uint256",
           "name": "forkId",
           "type": "uint256"
         },
@@ -170,6 +151,25 @@
         }
       ],
       "name": "ForkStringUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "tokenId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "forkId",
+          "type": "uint256"
+        }
+      ],
+      "name": "TokenForkUpdated",
       "type": "event"
     },
     {
@@ -376,42 +376,6 @@
           "type": "uint256"
         }
       ],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "tokenId",
-          "type": "uint256"
-        },
-        {
-          "internalType": "uint256",
-          "name": "forkId",
-          "type": "uint256"
-        }
-      ],
-      "name": "forkToken",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256[]",
-          "name": "tokenIds",
-          "type": "uint256[]"
-        },
-        {
-          "internalType": "uint256",
-          "name": "forkId",
-          "type": "uint256"
-        }
-      ],
-      "name": "forkTokens",
-      "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
     },
@@ -852,6 +816,42 @@
         }
       ],
       "name": "setForkOwner",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "tokenId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "forkId",
+          "type": "uint256"
+        }
+      ],
+      "name": "setTokenFork",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "tokenIds",
+          "type": "uint256[]"
+        },
+        {
+          "internalType": "uint256",
+          "name": "forkId",
+          "type": "uint256"
+        }
+      ],
+      "name": "setTokenForks",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
