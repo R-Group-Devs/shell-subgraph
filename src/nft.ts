@@ -35,6 +35,8 @@ export const handleNftTransfer = (
     fromOwner.balance = fromOwner.balance.minus(amount);
     if (fromOwner.balance.isZero()) {
       store.remove('NFTOwner', fromOwner.id);
+    } else {
+      fromOwner.save();
     }
   }
 
