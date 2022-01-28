@@ -86,6 +86,7 @@ export const getOrCreateNft = (collectionAddress: Address, tokenId: BigInt, time
     return nft;
   }
 
+
   const factory = Factory.load(collection.factory);
   if (!factory) throw new Error(`factory not indexed: ${collection.factory}`);
   factory.nftCount += 1;
@@ -104,6 +105,7 @@ export const getOrCreateNft = (collectionAddress: Address, tokenId: BigInt, time
   nft.totalSupply = BigInt.fromI32(0);
   nft.collection = collection.id;
   nft.createdAtTimestamp = timestamp;
+  nft.createdByEngine = collection.canonicalEngine;
 
   nft.save();
   return nft;

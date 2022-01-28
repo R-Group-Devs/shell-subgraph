@@ -70,6 +70,7 @@ type NFT @entity {
   tokenId: BigInt!
   totalSupply: BigInt!
   collection: Collection!
+  createdByEngine: Engine!
   fork: Fork!
 
   createdAtTimestamp: BigInt!
