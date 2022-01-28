@@ -32,8 +32,10 @@ type Collection @entity {
   nftCount: Int!
 
   implementation: Implementation!
-  factory: Factory! # denormalized (implementation -> factory)
   creator: Account!
+  factory: Factory! # denormalized (implementation -> factory)
+  canonicalOwner: Account! # denormalized (fork[0] -> owner)
+  canonicalEngine: Engine! # denormalized (fork[0] -> engine)
 
   createdAtTimestamp: BigInt!
 

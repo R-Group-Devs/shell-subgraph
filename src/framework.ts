@@ -1,3 +1,4 @@
+import { BigInt } from "@graphprotocol/graph-ts";
 import { ForkCreated, ForkEngineUpdated, ForkOwnerUpdated, IShellFramework, TokenForkUpdated } from "../generated/ShellFactoryDatasource/IShellFramework";
 import { getCollection, getOrCreateAccount, getOrCreateEngine, getOrCreateFork, getOrCreateNft } from "./entities";
 
@@ -25,6 +26,12 @@ export function handleForkCreated(event: ForkCreated): void {
   const owner = getOrCreateAccount(forkInfo.owner, timestamp);
   const engine = getOrCreateEngine(forkInfo.engine, timestamp);
 
+  if (fork.forkId.equals(BigInt.fromI32(0))) {
+    collection.canonicalEngine = engine.id;
+    collection.canonicalOwner = owner.id;
+    collection.save();
+  }
+
   fork.owner = owner.id;
   fork.engine = engine.id;
   fork.save();
@@ -36,6 +43,12 @@ export function handleForkEngineUpdated(event: ForkEngineUpdated): void {
   const fork = getOrCreateFork(collection, event.params.forkId, event.block.timestamp);
   const engine = getOrCreateEngine(event.params.engine, timestamp)
   fork.engine = engine.id;
+
+  if (fork.forkId.equals(BigInt.fromI32(0))) {
+    collection.canonicalEngine = engine.id;
+    collection.save();
+  }
+
   fork.save();
 }
 
@@ -45,6 +58,12 @@ export function handleForkOwnerUpdated(event: ForkOwnerUpdated): void {
   const fork = getOrCreateFork(collection, event.params.forkId, event.block.timestamp);
   const account = getOrCreateAccount(event.params.owner, timestamp)
   fork.owner = account.id;
+
+  if (fork.forkId.equals(BigInt.fromI32(0))) {
+    collection.canonicalOwner = account.id;
+    collection.save();
+  }
+
   fork.save();
 }
 
