@@ -53,6 +53,12 @@ templates:
     eventHandlers:
     - event: ForkCreated(uint256,address,address)
       handler: handleForkCreated
+    - event: ForkEngineUpdated(uint256,address)
+      handler: handleForkEngineUpdated
+    - event: ForkOwnerUpdated(uint256,address)
+      handler: handleForkOwnerUpdated
+    - event: TokenForkUpdated(uint256,uint256)
+      handler: handleTokenForkUpdated
 - name: ERC721Datasource
   kind: ethereum/contract
   network: {{network}}
