@@ -13,7 +13,9 @@ export const handleNftTransfer = (
 ): void => {
   const timestamp = event.block.timestamp;
   const nft = getOrCreateNft(collectionAddress, tokenId, timestamp);
+  nft.lastActivityAtTimestamp = timestamp;
   const collection = getCollection(collectionAddress);
+  collection.lastActivityAtTimestamp = timestamp;
 
   const isMint = from.equals(ZERO_ADDRESS);
   const isBurn = to.equals(ZERO_ADDRESS);

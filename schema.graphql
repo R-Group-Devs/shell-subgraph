@@ -38,6 +38,7 @@ type Collection @entity {
   canonicalEngine: Engine! # denormalized (fork[0] -> engine)
 
   createdAtTimestamp: BigInt!
+  lastActivityAtTimestamp: BigInt!
 
   forks: [Fork!]! @derivedFrom(field: "collection")
   nfts: [NFT!]! @derivedFrom(field: "collection")
@@ -74,6 +75,7 @@ type NFT @entity {
   fork: Fork!
 
   createdAtTimestamp: BigInt!
+  lastActivityAtTimestamp: BigInt!
 
   owners: [NFTOwner!]! @derivedFrom(field: "nft")
 }

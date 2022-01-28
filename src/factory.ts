@@ -63,6 +63,7 @@ export function handleCollectionCreated(event: CollectionCreated): void {
   collection.implementation = implementation.id;
   collection.creator = creator.id;
   collection.createdAtTimestamp = timestamp;
+  collection.lastActivityAtTimestamp = timestamp;
 
   collection.save();
 

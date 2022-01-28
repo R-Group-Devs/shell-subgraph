@@ -29,8 +29,9 @@ export function handleForkCreated(event: ForkCreated): void {
   if (fork.forkId.equals(BigInt.fromI32(0))) {
     collection.canonicalEngine = engine.id;
     collection.canonicalOwner = owner.id;
-    collection.save();
   }
+  collection.lastActivityAtTimestamp = timestamp;
+  collection.save();
 
   fork.owner = owner.id;
   fork.engine = engine.id;
@@ -46,8 +47,9 @@ export function handleForkEngineUpdated(event: ForkEngineUpdated): void {
 
   if (fork.forkId.equals(BigInt.fromI32(0))) {
     collection.canonicalEngine = engine.id;
-    collection.save();
   }
+  collection.lastActivityAtTimestamp = timestamp;
+  collection.save();
 
   fork.save();
 }
@@ -61,18 +63,22 @@ export function handleForkOwnerUpdated(event: ForkOwnerUpdated): void {
 
   if (fork.forkId.equals(BigInt.fromI32(0))) {
     collection.canonicalOwner = account.id;
-    collection.save();
   }
+  collection.lastActivityAtTimestamp = timestamp;
+  collection.save();
 
   fork.save();
 }
 
 export function handleTokenForkUpdated(event: TokenForkUpdated): void {
   const timestamp = event.block.timestamp;
-  const collection = getCollection(event.address);
   const nft = getOrCreateNft(event.address, event.params.tokenId, timestamp);
+  const collection = getCollection(event.address);
+  collection.lastActivityAtTimestamp = timestamp;
+  collection.save();
   const fork = getOrCreateFork(collection, event.params.forkId, timestamp);
   nft.fork = fork.id;
+  nft.lastActivityAtTimestamp = timestamp;
   nft.save();
 }
 

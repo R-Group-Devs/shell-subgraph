@@ -105,6 +105,7 @@ export const getOrCreateNft = (collectionAddress: Address, tokenId: BigInt, time
   nft.totalSupply = BigInt.fromI32(0);
   nft.collection = collection.id;
   nft.createdAtTimestamp = timestamp;
+  nft.lastActivityAtTimestamp = timestamp;
   nft.createdByEngine = collection.canonicalEngine;
 
   nft.save();
