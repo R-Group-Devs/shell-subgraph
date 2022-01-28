@@ -42,6 +42,7 @@ type Collection @entity {
 
   forks: [Fork!]! @derivedFrom(field: "collection")
   nfts: [NFT!]! @derivedFrom(field: "collection")
+  nftOwners: [NFTOwner!]! @derivedFrom(field: "collection")
 }
 
 type Fork @entity {
@@ -88,6 +89,7 @@ type NFTOwner @entity {
   collection: Collection!
 
   createdAtTimestamp: BigInt!
+  lastActivityAtTimestamp: BigInt!
 }
 
 type Account @entity {

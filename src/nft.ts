@@ -34,6 +34,7 @@ export const handleNftTransfer = (
   if (!isMint) {
     const fromOwner = getOrCreateNFTOwner(nft, from, timestamp);
     fromOwner.balance = fromOwner.balance.minus(amount);
+    fromOwner.lastActivityAtTimestamp = timestamp;
     if (fromOwner.balance.isZero()) {
       store.remove('NFTOwner', fromOwner.id);
     } else {
@@ -44,6 +45,7 @@ export const handleNftTransfer = (
   if (!isBurn) {
     const toOwner = getOrCreateNFTOwner(nft, to, timestamp);
     toOwner.balance = toOwner.balance.plus(amount);
+    toOwner.lastActivityAtTimestamp = timestamp;
     toOwner.save();
   }
 
