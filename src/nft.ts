@@ -12,12 +12,11 @@ export const handleNftTransfer = (
   event: ethereum.Event
 ): void => {
   const timestamp = event.block.timestamp;
-  const collection = getCollection(collectionAddress);
   const nft = getOrCreateNft(collectionAddress, tokenId, timestamp);
+  const collection = getCollection(collectionAddress);
 
   const isMint = from.equals(ZERO_ADDRESS);
   const isBurn = to.equals(ZERO_ADDRESS);
-
 
   if (isMint) {
     nft.totalSupply = nft.totalSupply.plus(amount);
@@ -46,5 +45,6 @@ export const handleNftTransfer = (
     toOwner.save();
   }
 
+  collection.save();
   nft.save();
 }

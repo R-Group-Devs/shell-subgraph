@@ -1,5 +1,5 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
-import { Account, Collection, Engine, Factory, Fork, NFT, NFTOwner } from "../generated/schema";
+import { Account, Collection, Engine, Factory, Fork, Implementation, NFT, NFTOwner } from "../generated/schema";
 import { IEngine } from '../generated/ShellFactoryDatasource/IEngine';
 
 export const getCollection = (address: Address): Collection => {
@@ -80,8 +80,6 @@ export const getOrCreateNft = (collectionAddress: Address, tokenId: BigInt, time
   const collection = Collection.load(collectionId);
   if (!collection) throw new Error(`collection does not yet exist: ${collectionId}`);
 
-
-
   const nftId = `${collection.id}-${tokenId}`;
   let nft = NFT.load(nftId);
   if (nft != null) {
@@ -90,9 +88,16 @@ export const getOrCreateNft = (collectionAddress: Address, tokenId: BigInt, time
 
   const factory = Factory.load(collection.factory);
   if (!factory) throw new Error(`factory not indexed: ${collection.factory}`);
-
   factory.nftCount += 1;
   factory.save();
+
+  const implementation = Implementation.load(collection.implementation);
+  if (!implementation) throw new Error(`implementation not indexed: ${collection.implementation}`);
+  implementation.nftCount += 1;
+  implementation.save();
+
+  collection.nftCount += 1;
+  collection.save();
 
   nft = new NFT(nftId);
   nft.tokenId = tokenId;

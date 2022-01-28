@@ -16,6 +16,8 @@ type Implementation @entity {
   name: String!
   address: String!
   factory: Factory!
+  collectionCount: Int!
+  nftCount: Int!
 
   createdAtTimestamp: BigInt!
 
@@ -27,6 +29,7 @@ type Collection @entity {
   name: String!
   symbol: String!
   address: String!
+  nftCount: Int!
 
   implementation: Implementation!
   factory: Factory! # denormalized (implementation -> factory)

@@ -20,6 +20,8 @@ export function handleImplementationRegistered(event: ImplementationRegistered):
   implementation.address = implementationId;
   implementation.factory = factory.id;
   implementation.createdAtTimestamp = event.block.timestamp;
+  implementation.collectionCount = 0;
+  implementation.nftCount = 0;
 
   implementation.save();
 }
@@ -42,6 +44,7 @@ export function handleCollectionCreated(event: CollectionCreated): void {
   collection.name = contract.name();
   collection.symbol = contract.symbol();
   collection.address = collectionId;
+  collection.nftCount = 0;
 
   // update engine and account
 
@@ -53,6 +56,8 @@ export function handleCollectionCreated(event: CollectionCreated): void {
   const implementationId = event.params.implementation.toHexString();
   const implementation = Implementation.load(implementationId);
   if (!implementation) throw new Error(`implementation not indexed: ${implementationId}`);
+  implementation.collectionCount += 1;
+  implementation.save();
 
   collection.factory = factory.id;
   collection.implementation = implementation.id;
