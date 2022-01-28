@@ -12,6 +12,7 @@ export function handleImplementationRegistered(event: ImplementationRegistered):
   const implementationId = event.params.implementation.toHexString();
 
   const factory = getOrCreateFactory(dataSource.address(), event.block.timestamp);
+  factory.implementationCount += 1;
   factory.save();
 
   const implementation = new Implementation(implementationId);
@@ -46,7 +47,7 @@ export function handleCollectionCreated(event: CollectionCreated): void {
 
   const creator = getOrCreateAccount(event.transaction.from, timestamp);
   const factory = getOrCreateFactory(dataSource.address(), timestamp);
-
+  factory.collectionCount += 1;
   factory.save();
 
   const implementationId = event.params.implementation.toHexString();

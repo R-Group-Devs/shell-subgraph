@@ -2,6 +2,9 @@ type Factory @entity {
   id: ID!
   address: String!
   owner: Account!
+  implementationCount: Int!
+  collectionCount: Int!
+  nftCount: Int!
 
   createdAtTimestamp: BigInt!
 
