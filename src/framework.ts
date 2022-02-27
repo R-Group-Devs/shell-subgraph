@@ -1,5 +1,5 @@
 import { BigInt } from "@graphprotocol/graph-ts";
-import { ForkCreated, ForkEngineUpdated, ForkOwnerUpdated, IShellFramework, TokenForkUpdated, TokenIntUpdated } from "../generated/ShellFactoryDatasource/IShellFramework";
+import { ForkCreated, ForkEngineUpdated, ForkOwnerUpdated, IShellFramework, TokenForkUpdated, TokenIntUpdated, TokenStringUpdated } from "../generated/ShellFactoryDatasource/IShellFramework";
 import { getCollection, getOrCreateAccount, getOrCreateEngine, getOrCreateFork, getOrCreateNft, getOrCreateTokenStorageValue } from "./entities";
 
 const storageEnum = (valueFromEvent: u32): string => {
@@ -106,18 +106,18 @@ export function handleTokenIntUpdated(event: TokenIntUpdated): void {
   storage.save();
 }
 
-// export function handleTokenStringUpdated(event: TokenStringUpdated): void {
-//   const timestamp = event.block.timestamp;
-//   const nft = getOrCreateNft(event.address, event.params.tokenId, timestamp);
-//   nft.lastActivityAtTimestamp = timestamp;
-//   nft.save();
+export function handleTokenStringUpdated(event: TokenStringUpdated): void {
+  const timestamp = event.block.timestamp;
+  const nft = getOrCreateNft(event.address, event.params.tokenId, timestamp);
+  nft.lastActivityAtTimestamp = timestamp;
+  nft.save();
 
-//   const storage = getOrCreateTokenStorageValue(
-//     nft,
-//     storageEnum(event.params.location),
-//     'STRING',
-//     event.params.key,
-//     timestamp);
-//   storage.stringValue = event.params.value;
-//   storage.save();
-// }
+  const storage = getOrCreateTokenStorageValue(
+    nft,
+    storageEnum(event.params.location),
+    'STRING',
+    event.params.key,
+    timestamp);
+  storage.stringValue = event.params.value;
+  storage.save();
+}

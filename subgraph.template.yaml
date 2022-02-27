@@ -61,6 +61,8 @@ templates:
       handler: handleTokenForkUpdated
     - event: TokenIntUpdated(uint8,uint256,string,uint256)
       handler: handleTokenIntUpdated
+    - event: TokenStringUpdated(uint8,uint256,string,string)
+      handler: handleTokenStringUpdated
 - name: ERC721Datasource
   kind: ethereum/contract
   network: {{network}}
