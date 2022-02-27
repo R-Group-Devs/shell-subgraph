@@ -43,6 +43,7 @@ type Collection @entity {
   forks: [Fork!]! @derivedFrom(field: "collection")
   nfts: [NFT!]! @derivedFrom(field: "collection")
   nftOwners: [NFTOwner!]! @derivedFrom(field: "collection")
+  storage: [CollectionStorageValue!]! @derivedFrom(field: "collection")
 }
 
 type Fork @entity {
@@ -71,14 +72,15 @@ type NFT @entity {
   id: ID!
   tokenId: BigInt!
   totalSupply: BigInt!
-  collection: Collection!
   createdByEngine: Engine!
   fork: Fork!
+  collection: Collection! # denormalized
 
   createdAtTimestamp: BigInt!
   lastActivityAtTimestamp: BigInt!
 
   owners: [NFTOwner!]! @derivedFrom(field: "nft")
+  storage: [TokenStorageValue!]! @derivedFrom(field: "nft")
 }
 
 type NFTOwner @entity {
@@ -86,11 +88,52 @@ type NFTOwner @entity {
   nft: NFT!
   owner: Account!
   balance: BigInt!
-  collection: Collection!
+  collection: Collection! # denormalized
 
   createdAtTimestamp: BigInt!
   lastActivityAtTimestamp: BigInt!
 }
+
+enum StorageLocation {
+  ENGINE
+  MINT_DATA
+  FRAMEWORK
+}
+
+enum StorageType {
+  INT
+  STRING
+}
+
+type TokenStorageValue @entity {
+  id: ID!
+  nft: NFT!
+  location: StorageLocation!
+  storageType: StorageType!
+  collection: Collection! # denormalized
+
+  key: String!
+  stringValue: String # null if int
+  intValue: BigInt # null if string
+
+  createdAtTimestamp: BigInt!
+  updatedAtTimestamp: BigInt!
+}
+
+type CollectionStorageValue @entity {
+  id: ID!
+  collection: Collection!
+  location: StorageLocation!
+  storageType: StorageType!
+
+  key: String!
+  stringValue: String # null if int
+  intValue: BigInt # null if string
+
+  createdAtTimestamp: BigInt!
+  updatedAtTimestamp: BigInt!
+}
+
 
 type Account @entity {
   id: ID!

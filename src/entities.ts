@@ -1,5 +1,5 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
-import { Account, Collection, Engine, Factory, Fork, Implementation, NFT, NFTOwner } from "../generated/schema";
+import { Account, Collection, Engine, Factory, Fork, Implementation, NFT, NFTOwner, TokenStorageValue } from "../generated/schema";
 import { IEngine } from '../generated/ShellFactoryDatasource/IEngine';
 
 export const getCollection = (address: Address): Collection => {
@@ -148,23 +148,24 @@ export const getOrCreateNFTOwner = (nft: NFT, ownerAddress: Address, timestamp: 
 //   return nftEvent;
 // }
 
-// export const getOrCreateTokenStorageValue = (
-//   nft: NFT, location: string, type: string, key: string, timestamp: BigInt): TokenStorageValue =>
-// {
-//   const storageId = `${nft.id}-${location}-${type}-${key}`;
-//   let storage = TokenStorageValue.load(storageId);
-//   if (storage != null) {
-//     return storage;
-//   }
+export const getOrCreateTokenStorageValue = (
+  nft: NFT, location: string, type: string, key: string, timestamp: BigInt): TokenStorageValue =>
+{
+  const storageId = `${nft.id}-${location}-${type}-${key}`;
+  let storage = TokenStorageValue.load(storageId);
+  if (storage != null) {
+    return storage;
+  }
 
-//   storage = new TokenStorageValue(storageId);
-//   storage.nft = nft.id;
-//   storage.collection = nft.collection;
-//   storage.location = location;
-//   storage.storageType = type;
-//   storage.key = key;
-//   storage.createdAtTimestamp = timestamp;
+  storage = new TokenStorageValue(storageId);
+  storage.nft = nft.id;
+  storage.collection = nft.collection;
+  storage.location = location;
+  storage.storageType = type;
+  storage.key = key;
+  storage.createdAtTimestamp = timestamp;
+  storage.updatedAtTimestamp = timestamp;
 
-//   storage.save();
-//   return storage;
-// }
+  storage.save();
+  return storage;
+}
