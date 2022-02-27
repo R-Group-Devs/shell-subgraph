@@ -43,7 +43,6 @@ type Collection @entity {
   forks: [Fork!]! @derivedFrom(field: "collection")
   nfts: [NFT!]! @derivedFrom(field: "collection")
   nftOwners: [NFTOwner!]! @derivedFrom(field: "collection")
-  storage: [CollectionStorageValue!]! @derivedFrom(field: "collection")
 }
 
 type Fork @entity {
@@ -56,6 +55,7 @@ type Fork @entity {
   createdAtTimestamp: BigInt!
 
   nfts: [NFT!]! @derivedFrom(field: "fork")
+  storage: [ForkStorageValue!]! @derivedFrom(field: "fork")
 }
 
 type Engine @entity {
@@ -120,11 +120,12 @@ type TokenStorageValue @entity {
   updatedAtTimestamp: BigInt!
 }
 
-type CollectionStorageValue @entity {
+type ForkStorageValue @entity {
   id: ID!
-  collection: Collection!
+  fork: Fork!
   location: StorageLocation!
   storageType: StorageType!
+  collection: Collection! # denormalized
 
   key: String!
   stringValue: String # null if int

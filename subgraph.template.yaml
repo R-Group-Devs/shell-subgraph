@@ -59,6 +59,10 @@ templates:
       handler: handleForkOwnerUpdated
     - event: TokenForkUpdated(uint256,uint256)
       handler: handleTokenForkUpdated
+    - event: ForkIntUpdated(uint8,uint256,string,uint256)
+      handler: handleForkIntUpdated
+    - event: ForkStringUpdated(uint8,uint256,string,string)
+      handler: handleForkStringUpdated
     - event: TokenIntUpdated(uint8,uint256,string,uint256)
       handler: handleTokenIntUpdated
     - event: TokenStringUpdated(uint8,uint256,string,string)

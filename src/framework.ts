@@ -1,6 +1,6 @@
 import { BigInt } from "@graphprotocol/graph-ts";
-import { ForkCreated, ForkEngineUpdated, ForkOwnerUpdated, IShellFramework, TokenForkUpdated, TokenIntUpdated, TokenStringUpdated } from "../generated/ShellFactoryDatasource/IShellFramework";
-import { getCollection, getOrCreateAccount, getOrCreateEngine, getOrCreateFork, getOrCreateNft, getOrCreateTokenStorageValue } from "./entities";
+import { ForkCreated, ForkEngineUpdated, ForkIntUpdated, ForkOwnerUpdated, ForkStringUpdated, IShellFramework, TokenForkUpdated, TokenIntUpdated, TokenStringUpdated } from "../generated/ShellFactoryDatasource/IShellFramework";
+import { getCollection, getOrCreateAccount, getOrCreateEngine, getOrCreateFork, getOrCreateForkStorageValue, getOrCreateNft, getOrCreateTokenStorageValue } from "./entities";
 
 const storageEnum = (valueFromEvent: u32): string => {
   switch (valueFromEvent) {
@@ -82,13 +82,41 @@ export function handleTokenForkUpdated(event: TokenForkUpdated): void {
   nft.save();
 }
 
-// export function handleCollectionIntUpdated(event: CollectionIntUpdated): void {
+export function handleForkIntUpdated(event: ForkIntUpdated): void {
+  const timestamp = event.block.timestamp;
+  const collection = getCollection(event.address);
+  collection.lastActivityAtTimestamp = timestamp;
+  collection.save();
+  const fork = getOrCreateFork(collection, event.params.forkId, timestamp);
 
-// }
+  const storage = getOrCreateForkStorageValue(
+    fork,
+    storageEnum(event.params.location),
+    'INT',
+    event.params.key,
+    timestamp
+  );
+  storage.intValue = event.params.value;
+  storage.save();
+}
 
-// export function handleCollectionStringUpdated(event: CollectionStringUpdated): void {
+export function handleForkStringUpdated(event: ForkStringUpdated): void {
+  const timestamp = event.block.timestamp;
+  const collection = getCollection(event.address);
+  collection.lastActivityAtTimestamp = timestamp;
+  collection.save();
+  const fork = getOrCreateFork(collection, event.params.forkId, timestamp);
 
-// }
+  const storage = getOrCreateForkStorageValue(
+    fork,
+    storageEnum(event.params.location),
+    'STRING',
+    event.params.key,
+    timestamp
+  );
+  storage.stringValue = event.params.value;
+  storage.save();
+}
 
 export function handleTokenIntUpdated(event: TokenIntUpdated): void {
   const timestamp = event.block.timestamp;

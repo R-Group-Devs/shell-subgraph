@@ -1,5 +1,5 @@
 import { Address, BigInt } from "@graphprotocol/graph-ts";
-import { Account, Collection, Engine, Factory, Fork, Implementation, NFT, NFTOwner, TokenStorageValue } from "../generated/schema";
+import { Account, Collection, Engine, Factory, Fork, ForkStorageValue, Implementation, NFT, NFTOwner, TokenStorageValue } from "../generated/schema";
 import { IEngine } from '../generated/ShellFactoryDatasource/IEngine';
 
 export const getCollection = (address: Address): Collection => {
@@ -160,6 +160,28 @@ export const getOrCreateTokenStorageValue = (
   storage = new TokenStorageValue(storageId);
   storage.nft = nft.id;
   storage.collection = nft.collection;
+  storage.location = location;
+  storage.storageType = type;
+  storage.key = key;
+  storage.createdAtTimestamp = timestamp;
+  storage.updatedAtTimestamp = timestamp;
+
+  storage.save();
+  return storage;
+}
+
+export const getOrCreateForkStorageValue = (
+  fork: Fork, location: string, type: string, key: string, timestamp: BigInt): ForkStorageValue =>
+{
+  const storageId = `${fork.id}-${location}-${type}-${key}`;
+  let storage = ForkStorageValue.load(storageId);
+  if (storage != null) {
+    return storage;
+  }
+
+  storage = new ForkStorageValue(storageId);
+  storage.fork = fork.id;
+  storage.collection = fork.collection;
   storage.location = location;
   storage.storageType = type;
   storage.key = key;
