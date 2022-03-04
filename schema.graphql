@@ -30,6 +30,7 @@ type Collection @entity {
   symbol: String!
   address: String!
   nftCount: Int!
+  forkCount: Int!
 
   implementation: Implementation!
   creator: Account!
@@ -141,5 +142,10 @@ type Account @entity {
   address: String!
 
   createdAtTimestamp: BigInt!
+
+  factories: [Factory!]! @derivedFrom(field: "owner")
+  collections: [Collection!]! @derivedFrom(field: "canonicalOwner")
+  forks: [Fork!]! @derivedFrom(field: "owner")
+  nfts: [NFTOwner!]! @derivedFrom(field: "owner")
 }
 

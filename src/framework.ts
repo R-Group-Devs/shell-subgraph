@@ -31,6 +31,7 @@ export function handleForkCreated(event: ForkCreated): void {
     collection.canonicalOwner = owner.id;
   }
   collection.lastActivityAtTimestamp = timestamp;
+  collection.forkCount++;
   collection.save();
 
   fork.owner = owner.id;
