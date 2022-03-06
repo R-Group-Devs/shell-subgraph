@@ -1,4 +1,5 @@
 import { BigInt } from "@graphprotocol/graph-ts";
+import { Fork } from "../generated/schema";
 import { ForkCreated, ForkEngineUpdated, ForkIntUpdated, ForkOwnerUpdated, ForkStringUpdated, IShellFramework, TokenForkUpdated, TokenIntUpdated, TokenStringUpdated } from "../generated/ShellFactoryDatasource/IShellFramework";
 import { getCollection, getOrCreateAccount, getOrCreateEngine, getOrCreateFork, getOrCreateForkStorageValue, getOrCreateNft, getOrCreateTokenStorageValue } from "./entities";
 
@@ -77,7 +78,16 @@ export function handleTokenForkUpdated(event: TokenForkUpdated): void {
   const collection = getCollection(event.address);
   collection.lastActivityAtTimestamp = timestamp;
   collection.save();
+
+  const previousFork = Fork.load(nft.fork);
+  if (!previousFork) throw new Error(`fork not indeed: ${nft.fork}`);
+  previousFork.nftCount -= 1;
+  previousFork.save();
+
   const fork = getOrCreateFork(collection, event.params.forkId, timestamp);
+  fork.nftCount += 1;
+  fork.save();
+
   nft.fork = fork.id;
   nft.lastActivityAtTimestamp = timestamp;
   nft.save();

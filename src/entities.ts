@@ -51,6 +51,7 @@ export const getOrCreateFork = (collection: Collection, id: BigInt, timestamp: B
   fork = new Fork(forkId);
   fork.forkId = id;
   fork.collection = collection.id;
+  fork.nftCount = 0;
   fork.createdAtTimestamp = timestamp;
 
   fork.save();

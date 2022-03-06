@@ -52,6 +52,7 @@ type Fork @entity {
   collection: Collection!
   owner: Account!
   engine: Engine!
+  nftCount: Int!
 
   createdAtTimestamp: BigInt!
 

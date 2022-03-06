@@ -22,7 +22,10 @@ export const handleNftTransfer = (
 
   if (isMint) {
     nft.totalSupply = nft.totalSupply.plus(amount);
-    nft.fork = getOrCreateFork(collection, BigInt.fromI32(0), timestamp).id;
+    const fork = getOrCreateFork(collection, BigInt.fromI32(0), timestamp);
+    nft.fork = fork.id;
+    fork.nftCount += 1;
+    fork.save();
     // TODO: NFT event
   } else if (isBurn) {
     nft.totalSupply = nft.totalSupply.minus(amount);
