@@ -35,6 +35,7 @@ export function handleForkCreated(event: ForkCreated): void {
   collection.forkCount++;
   collection.save();
 
+  fork.creator = getOrCreateAccount(event.transaction.from, timestamp).id;
   fork.owner = owner.id;
   fork.engine = engine.id;
   fork.save();
