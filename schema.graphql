@@ -69,6 +69,8 @@ type Engine @entity {
   createdAtTimestamp: BigInt!
 
   forks: [Fork!]! @derivedFrom(field: "engine")
+  mintedNfts: [NFT!]! @derivedFrom(field: "createdByEngine")
+  collections: [Collection!]! @derivedFrom(field: "canonicalEngine")
 }
 
 type NFT @entity {
