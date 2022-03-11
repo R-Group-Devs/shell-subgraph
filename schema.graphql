@@ -148,8 +148,10 @@ type Account @entity {
   createdAtTimestamp: BigInt!
 
   factories: [Factory!]! @derivedFrom(field: "owner")
-  collections: [Collection!]! @derivedFrom(field: "canonicalOwner")
-  forks: [Fork!]! @derivedFrom(field: "owner")
+  ownedCollections: [Collection!]! @derivedFrom(field: "canonicalOwner")
+  ownedForks: [Fork!]! @derivedFrom(field: "owner")
   nfts: [NFTOwner!]! @derivedFrom(field: "owner")
+  createdCollections: [Collection!]! @derivedFrom(field: "creator")
+  createdForks: [Fork!]! @derivedFrom(field: "creator")
 }
 
