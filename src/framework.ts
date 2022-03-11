@@ -1,5 +1,5 @@
 import { BigInt } from "@graphprotocol/graph-ts";
-import { Fork } from "../generated/schema";
+import { Engine, Fork } from "../generated/schema";
 import { ForkCreated, ForkEngineUpdated, ForkIntUpdated, ForkOwnerUpdated, ForkStringUpdated, IShellFramework, TokenForkUpdated, TokenIntUpdated, TokenStringUpdated } from "../generated/ShellFactoryDatasource/IShellFramework";
 import { getCollection, getOrCreateAccount, getOrCreateEngine, getOrCreateFork, getOrCreateForkStorageValue, getOrCreateNft, getOrCreateTokenStorageValue } from "./entities";
 
@@ -30,10 +30,14 @@ export function handleForkCreated(event: ForkCreated): void {
   if (fork.forkId.equals(BigInt.fromI32(0))) {
     collection.canonicalEngine = engine.id;
     collection.canonicalOwner = owner.id;
+    engine.collectionCount += 1;
+  } else {
+    engine.forkCount += 1;
   }
   collection.lastActivityAtTimestamp = timestamp;
   collection.forkCount++;
   collection.save();
+  engine.save();
 
   fork.creator = getOrCreateAccount(event.transaction.from, timestamp).id;
   fork.owner = owner.id;
@@ -45,8 +49,21 @@ export function handleForkEngineUpdated(event: ForkEngineUpdated): void {
   const timestamp = event.block.timestamp;
   const collection = getCollection(event.address);
   const fork = getOrCreateFork(collection, event.params.forkId, event.block.timestamp);
+  const oldEngine = Engine.load(fork.engine);
+  if (!oldEngine) throw new Error(`engine ${fork.engine} not indexed yet`);
   const engine = getOrCreateEngine(event.params.engine, timestamp)
   fork.engine = engine.id;
+
+  // handle collection or fork counters
+  if (fork.forkId.isZero()) {
+    oldEngine.collectionCount -= 1;
+    engine.collectionCount += 1;
+  } else {
+    oldEngine.forkCount -1;
+    engine.forkCount += 1;
+  }
+  oldEngine.save();
+  engine.save();
 
   if (fork.forkId.equals(BigInt.fromI32(0))) {
     collection.canonicalEngine = engine.id;

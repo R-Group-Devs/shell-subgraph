@@ -70,6 +70,9 @@ export const getOrCreateEngine = (address: Address, timestamp: BigInt): Engine =
   engine = new Engine(engineId);
   engine.address = engineId;
   engine.name = contract.name();
+  engine.forkCount = 0;
+  engine.mintedNftCount = 0;
+  engine.collectionCount = 0;
   engine.createdAtTimestamp = timestamp;
 
   engine.save();

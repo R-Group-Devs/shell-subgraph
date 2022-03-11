@@ -65,6 +65,9 @@ type Engine @entity {
   id: ID!
   address: String!
   name: String!
+  forkCount: Int!
+  mintedNftCount: Int!
+  collectionCount: Int!
 
   createdAtTimestamp: BigInt!
 

@@ -1,4 +1,5 @@
 import { Address, BigInt, ethereum, store } from "@graphprotocol/graph-ts";
+import { Engine } from "../generated/schema";
 import { ZERO_ADDRESS } from "./constants";
 import { getCollection, getOrCreateFork, getOrCreateNft, getOrCreateNFTOwner } from "./entities";
 
@@ -26,6 +27,10 @@ export const handleNftTransfer = (
     nft.fork = fork.id;
     fork.nftCount += 1;
     fork.save();
+    const engine = Engine.load(fork.engine);
+    if (!engine) throw new Error(`engine ${fork.engine} not indexed`);
+    engine.mintedNftCount += 1;
+    engine.save();
     // TODO: NFT event
   } else if (isBurn) {
     nft.totalSupply = nft.totalSupply.minus(amount);
