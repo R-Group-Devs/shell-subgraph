@@ -126,6 +126,7 @@ export const getOrCreateNFTOwner = (nft: NFT, ownerAddress: Address, timestamp: 
 
   nftOwner = new NFTOwner(nftOwnerId);
   nftOwner.nft = nft.id;
+  nftOwner.nftTokenId = nft.tokenId;
   nftOwner.collection = nft.collection;
   nftOwner.owner = owner.id;
   nftOwner.balance = BigInt.fromI32(0);
@@ -135,22 +136,6 @@ export const getOrCreateNFTOwner = (nft: NFT, ownerAddress: Address, timestamp: 
   nftOwner.save();
   return nftOwner;
 }
-
-// export const createNftEvent = (nft: NFT, type: string, engine: Engine, event: ethereum.Event): NFTEvent => {
-//   const timestamp = event.block.timestamp;
-
-//   const eventId = `${event.transaction.hash.toHexString()}-${event.logIndex}`;
-//   const nftEvent = new NFTEvent(eventId);
-//   nftEvent.nft = nft.id;
-//   nftEvent.collection = nft.collection;
-//   nftEvent.eventType = type;
-//   nftEvent.operator = getOrCreateAccount(event.transaction.from, timestamp).id;
-//   nftEvent.engine = engine.id;
-//   nftEvent.createdAtTimestamp = timestamp;
-
-//   nftEvent.save();
-//   return nftEvent;
-// }
 
 export const getOrCreateTokenStorageValue = (
   nft: NFT, location: string, type: string, key: string, timestamp: BigInt): TokenStorageValue =>
@@ -164,6 +149,7 @@ export const getOrCreateTokenStorageValue = (
   storage = new TokenStorageValue(storageId);
   storage.nft = nft.id;
   storage.collection = nft.collection;
+  storage.nftTokenId = nft.tokenId;
   storage.location = location;
   storage.storageType = type;
   storage.key = key;

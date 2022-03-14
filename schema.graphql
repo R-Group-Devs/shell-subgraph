@@ -97,6 +97,7 @@ type NFTOwner @entity {
   owner: Account!
   balance: BigInt!
   collection: Collection! # denormalized
+  nftTokenId: BigInt! # denormalized
 
   createdAtTimestamp: BigInt!
   lastActivityAtTimestamp: BigInt!
@@ -119,6 +120,7 @@ type TokenStorageValue @entity {
   location: StorageLocation!
   storageType: StorageType!
   collection: Collection! # denormalized
+  nftTokenId: BigInt! # denormalized
 
   key: String!
   stringValue: String # null if int
